@@ -35,6 +35,14 @@ class WlpsClient:
     def get_iterable(self, endpoint):
         return WlpsIterable(self, endpoint)
 
+    def get_shows(self, category):
+        endpoint = self.get_list_endpoint("show") + "&category=" + category["id"]
+        return WlpsIterable(self, endpoint)
+
+    def get_episodes(self, show):
+        endpoint = self.get_list_endpoint("episode") + "&show=" + show["id"]
+        return WlpsIterable(self, endpoint)
+
 # NOT thread safe
 class WlpsIterable:
     def __init__(self, client, endpoint):

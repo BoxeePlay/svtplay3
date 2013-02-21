@@ -14,6 +14,14 @@ categories = []
 categories.extend(client.categories)
 BPLog(str(categories))
 BPLog("Categories fetched second time. Should be cached!")
+shows = []
+shows.extend(client.get_shows(categories[2]))
+BPLog(str(shows))
+BPLog("Shows fetched for category nr 2: " + categories[2]["title"])
+episodes = []
+episodes.extend(client.get_episodes(shows[5]))
+BPLog(str(episodes))
+BPLog("Episodes fetched for episode nr 5: " + shows[5]["title"])
 #episodes = []
 #episodes.extend(client.get_iterable(client.get_list_endpoint("episode")))
 #BPLog("_All_ episodes fetched. API haz bugz!")
@@ -23,5 +31,4 @@ BPLog("Categories fetched second time. Should be cached!")
 #
 # Implement:
 # * Latest episodes as WlpsIterable
-# * Get shows from category
-# * Get episodes from show
+# * Recommended episodes as WlpsIterable
