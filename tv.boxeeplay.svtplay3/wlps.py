@@ -42,20 +42,33 @@ class WlpsClient:
         return WlpsIterable(self, endpoint)
 
     def get_shows(self, category):
-        endpoint = self.get_list_endpoint("show")
-        endpoint.add_param("category", category["id"])
-        return self.get_iterable(endpoint)
+        url = self.get_list_endpoint("show")
+        url.add_param("category", category["id"])
+        #url.add_param("order_by", "title") # Not yet implemented server side! (gives us http code 500)
+        return self.get_iterable(url)
+
+    def get_recommended_episodes(self):
+        url = self.get_list_endpoint("episode")
+        url.add_param("recommended", "true")
+        url.add_param("order_by", "-date_broadcasted")
+        return self.get_iterable(url)
+
+    def get_latest_episodes(self):
+        url = self.get_list_endpoint("episode")
+        url.add_param("order_by", "-date_broadcasted")
+        return self.get_iterable(url)
 
     def get_episodes(self, show):
-        endpoint = self.get_list_endpoint("episode")
-        endpoint.add_param("show", show["id"])
-        return self.get_iterable(endpoint)
+        url = self.get_list_endpoint("episode")
+        url.add_param("show", show["id"])
+        url.add_param("order_by", "-date_broadcasted")
+        return self.get_iterable(url)
 
 # NOT thread safe
 class WlpsIterable:
-    def __init__(self, client, endpoint):
+    def __init__(self, client, url):
         self.client = client
-        self.next_endpoint = endpoint
+        self.next_url = url
         self.objects = []
         self.current_limit = 0
         self.size = 1
@@ -66,7 +79,7 @@ class WlpsIterable:
     def set_meta(self, meta):
         self.current_limit = meta["offset"] + meta["limit"]
         self.size = meta["total_count"]
-        self.next_endpoint = self.client.url(meta["next"])
+        self.next_url = self.client.url(meta["next"])
 
 # NOT thread safe
 class WlpsIterator:
@@ -83,7 +96,7 @@ class WlpsIterator:
         if self.current >= self.iterable.size:
             raise StopIteration
         if self.current >= self.iterable.current_limit:
-            json = self.client.get_json(self.iterable.next_endpoint)
+            json = self.client.get_json(self.iterable.next_url)
             self.iterable.set_meta(json["meta"])
             self.iterable.objects.extend(json["objects"])
         if self.current >= len(self.iterable.objects):
