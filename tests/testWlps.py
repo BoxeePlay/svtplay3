@@ -32,3 +32,4 @@ BPLog("Episodes fetched for episode nr 5: " + shows[5]["title"])
 # Implement:
 # * Latest episodes as WlpsIterable
 # * Recommended episodes as WlpsIterable
+# * Sort shows and episodes by title

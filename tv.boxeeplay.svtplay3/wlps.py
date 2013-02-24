@@ -3,7 +3,7 @@
 #project:boxeeplay.tv
 
 import simplejson as json
-from utilities import getData, handleException
+from utilities import get_data, handleException, Url
 from logger import BPLog, Level
 
 BASE_URL = "http://api.welovepublicservice.se"
@@ -22,26 +22,34 @@ def convert(input):
 
 class WlpsClient:
     def __init__(self):
-        self.endpoints = self.get_json("/v1/")
+        self.endpoints = self.get_json(self.url("/v1/"))
         self.categories = self.get_iterable(self.get_list_endpoint("category"))
 
-    def get_list_endpoint(self, key):
-        return self.endpoints[key]["list_endpoint"] + "?format=json"
+    def url(self, location):
+        if location is None:
+            return None
+        url = Url(BASE_URL + location)
+        url.add_param("format", "json")
+        return url
 
-    def get_json(self, location):
-        url = BASE_URL + location
-        return convert(json.loads(getData(url)))
+    def get_list_endpoint(self, key):
+        return self.url(self.endpoints[key]["list_endpoint"])
+
+    def get_json(self, url):
+        return convert(json.loads(get_data(url)))
 
     def get_iterable(self, endpoint):
         return WlpsIterable(self, endpoint)
 
     def get_shows(self, category):
-        endpoint = self.get_list_endpoint("show") + "&category=" + category["id"]
-        return WlpsIterable(self, endpoint)
+        endpoint = self.get_list_endpoint("show")
+        endpoint.add_param("category", category["id"])
+        return self.get_iterable(endpoint)
 
     def get_episodes(self, show):
-        endpoint = self.get_list_endpoint("episode") + "&show=" + show["id"]
-        return WlpsIterable(self, endpoint)
+        endpoint = self.get_list_endpoint("episode")
+        endpoint.add_param("show", show["id"])
+        return self.get_iterable(endpoint)
 
 # NOT thread safe
 class WlpsIterable:
@@ -58,7 +66,7 @@ class WlpsIterable:
     def set_meta(self, meta):
         self.current_limit = meta["offset"] + meta["limit"]
         self.size = meta["total_count"]
-        self.next_endpoint = meta["next"]
+        self.next_endpoint = self.client.url(meta["next"])
 
 # NOT thread safe
 class WlpsIterator:
