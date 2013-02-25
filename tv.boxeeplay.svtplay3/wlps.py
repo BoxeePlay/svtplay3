@@ -29,7 +29,6 @@ class WlpsClient:
         if location is None:
             return None
         url = Url(BASE_URL + location)
-        url.add_param("format", "json")
         return url
 
     def get_list_endpoint(self, key):
