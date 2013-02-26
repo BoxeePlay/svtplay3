@@ -16,4 +16,5 @@ Version 3.00, drivs av welovepublicservice.se</description>
    <startWindow>start</startWindow>
    <platform>all</platform>
    <minversion>0.9.21</minversion>
+   <test-app>true</test-app>
 </app>

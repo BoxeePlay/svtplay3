@@ -8,7 +8,7 @@ from logger import BPLog, Level
 
 BASE_URL = "http://api.welovepublicservice.se"
 
-__all__ = [ "WlpsClient" ]
+__all__ = [ "WlpsClient", "WlpsIterable" ]
 
 def convert(input):
     if isinstance(input, dict):

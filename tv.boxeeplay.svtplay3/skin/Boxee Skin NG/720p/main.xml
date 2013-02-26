@@ -53,7 +53,7 @@
                 <texturefocus border="10">button.png</texturefocus>
                 <alttexturefocus border="10">button.png</alttexturefocus>
                 <alttexturenofocus border="10">button_alt.png</alttexturenofocus>
-                <onclick lang="python"><![CDATA[actions.loadRecommendedPrograms()]]></onclick>
+                <onclick lang="python"><![CDATA[actions.load_recommended_episodes()]]></onclick>
             </control>
             <control type="button" id="107">
                 <ondown>1000</ondown>
@@ -74,7 +74,7 @@
                 <texturefocus border="10">button.png</texturefocus>
                 <alttexturefocus border="10">button.png</alttexturefocus>
                 <alttexturenofocus border="10">button_alt.png</alttexturenofocus>
-                <onclick lang="python"><![CDATA[actions.showRecent()]]></onclick>
+                <onclick lang="python"><![CDATA[actions.load_recent_episodes()]]></onclick>
             </control>
             <control type="button" id="108">
                 <ondown>1000</ondown>
@@ -95,7 +95,7 @@
                 <texturefocus border="10">button.png</texturefocus>
                 <alttexturefocus border="10">button.png</alttexturefocus>
                 <alttexturenofocus border="10">button_alt.png</alttexturenofocus>
-                <onclick lang="python"><![CDATA[actions.loadPopularPrograms()]]></onclick>
+                <onclick lang="python"><![CDATA[actions.load_popular_shows()]]></onclick>
             </control>
             <control type="button" id="109">
                 <ondown>1000</ondown>
@@ -233,7 +233,7 @@
                 <onup>100</onup>
                 <content type="action">
                     <onclick lang="python">
-                        <![CDATA[actions.loadPrograms()]]>
+                        <![CDATA[actions.load_shows_from_category()]]>
                     </onclick>
                 </content>
                 <itemlayout width="170">
@@ -327,7 +327,7 @@
                 <onright>3001</onright>
                 <content type="action">
                     <onclick lang="python">
-                        <![CDATA[actions.loadEpisodes()]]>
+                        <![CDATA[actions.load_episodes_from_show()]]>
                     </onclick>
                 </content>
                 <orientation>vertical</orientation>
@@ -441,8 +441,8 @@
                         <visible>!IsEmpty(ListItem.Thumb)</visible>
                         <posx>5</posx>
                         <posy>5</posy>
-                        <width>160</width>
-                        <height>90</height>
+                        <width>150</width>
+                        <height>84</height>
                         <aspectratio>scale</aspectratio>
                         <colordiffuse>FF858269</colordiffuse>
                         <info>ListItem.Thumb</info>
@@ -500,8 +500,8 @@
                         <visible>!IsEmpty(ListItem.Thumb)</visible>
                         <posx>10</posx>
                         <posy>10</posy>
-                        <width>240</width>
-                        <height>135</height>
+                        <width>320</width>
+                        <height>180</height>
                         <aspectratio>scale</aspectratio>
                         <info>ListItem.Icon</info>
                     </control>
