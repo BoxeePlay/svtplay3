@@ -31,7 +31,17 @@ def episode_to_list_item(item):
     duration_array = item["length"].split()
     duration = sum(map(parse_duration, zip(duration_array[1::2], duration_array[::2])))
     list_item.SetDuration(duration)
+
+    list_item.SetThumbnail(get_image_size(item["thumbnail_url"], "small"))
+    list_item.SetIcon(get_image_size(item["thumbnail_url"], "medium"))
     return list_item
+
+def get_image_size(url, size):
+    parts = url.split("/")
+    if "ALTERNATES" in parts:
+        size_position = parts.index("ALTERNATES") + 1
+        parts[size_position] = size
+    return "/".join(parts)
 
 def parse_duration((identifier, value)):
     if identifier == "h":

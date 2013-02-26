@@ -9,35 +9,49 @@ import itertools
 
 SetEnabledPlus(Level.DEBUG, True)
 client = WlpsClient()
+
 BPLog("START")
+
 categories = []
 categories.extend(client.categories)
 BPLog("Categories fetched first time. All " + str(len(categories)) + " of them!")
+
 categories = []
 categories.extend(client.categories)
 #BPLog(simplejson.dumps(categories, indent=2))
 BPLog("Categories fetched second time. Should be cached! All " + str(len(categories)) + " of them!")
+
+mc_categories = itertools.imap(category_to_list_item, categories)
+mc_cat_list = []
+mc_cat_list.extend(mc_categories)
+BPLog("mc items for categories are " + str(len(mc_cat_list)))
+
 shows = []
 shows.extend(client.get_shows(categories[2]))
 #BPLog(simplejson.dumps(shows, indent=2))
 BPLog("Fetched " + str(len(shows)) + " shows for category nr 2: " + categories[2]["title"])
+
 episodes = []
 episodes.extend(client.get_episodes(shows[7]))
 #BPLog(simplejson.dumps(episodes, indent=2))
 BPLog("Fetched " + str(len(episodes)) + " episodes for shows nr 7: " + shows[7]["title"])
+
 episodes = []
 episodes.extend(client.get_recommended_episodes())
 #BPLog(simplejson.dumps(episodes, indent=2))
 BPLog("Recommended episodes fetched. All " + str(len(episodes)) + " of them!")
+
 episodes = []
 episodes.extend(itertools.islice(client.get_latest_episodes(), 40))
 #BPLog(simplejson.dumps(episodes, indent=2))
 BPLog("Latest episodes fetched. All " + str(len(episodes)) + " of them!")
+
 #episodes = []
 #episodes.extend(client.get_iterable(client.get_list_endpoint("episode")))
 #BPLog("_All_ episodes fetched. API haz bugz!")
 
 BPLog("### Transform tests ###")
+
 category = {"id": "6",
             "resource_uri": "/v1/category/6/",
             "shows": [
@@ -67,7 +81,8 @@ category = {"id": "6",
             ],
             "title": "Film & Drama"}
 category_item = category_to_list_item(category)
-BPLog("Transformed category: " + str(category_item))
+BPLog("Transformed category:")
+BPLog(simplejson.dumps(category_item.to_object(), indent=2))
 
 show     = {"episodes": [
                 "/v1/episode/9393/",
@@ -80,7 +95,8 @@ show     = {"episodes": [
             "resource_uri": "/v1/show/463/",
             "title": "Akuten"}
 show_item = show_to_list_item(show)
-BPLog("Transformed show: " + str(show_item))
+BPLog("Transformed show:")
+BPLog(simplejson.dumps(show_item.to_object(), indent=2))
 
 episode = {"date_available_until": "2013-03-22T19:34:57.081480+00:00",
            "date_broadcasted": "2012-03-22T14:10:00+00:00",
@@ -90,17 +106,17 @@ episode = {"date_available_until": "2013-03-22T19:34:57.081480+00:00",
            "http_status": 200,
            "http_status_checked_date": "2013-02-24T22:00:03.605942+00:00",
            "id": "9377",
-           "length": "0 sek",
+           "length": "1 h 23 sek",
            "recommended": False,
            "resource_uri": "/v1/episode/9377/",
            "show": "/v1/show/462/",
            "state": 0,
-           "thumbnail_url": None,
+           "thumbnail_url": "http://www.svt.se/cachable_image/1361790032000/svts/article1055275.svt/ALTERNATES/extralarge/lofvencamilla_992.jpg",
            "title": "SVT Nyheter Live",
            "url": "http://www.svtplay.se/video/116538/svt-nyheter-live-22-3"}
 episode_item = episode_to_list_item(episode)
-BPLog("Transformed episode: " + str(episode_item))
-
+BPLog("Transformed episode:")
+BPLog(simplejson.dumps(episode_item.to_object(), indent=2))
 
 
 # TODO

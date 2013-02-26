@@ -262,7 +262,7 @@ class ListItem:
     def SetAddToHistory(self, add_to_history):
         self.add_to_history = add_to_history
 
-    def __str__(self):
+    def to_object(self):
         result = {}
         if hasattr(self, "type"): result["type"] = self.type
         if self.alternative_paths: result["alternative_paths"] = self.alternative_paths
@@ -299,4 +299,7 @@ class ListItem:
         if hasattr(self, "view_count"): result["view_count"] = self.view_count
         if hasattr(self, "writer"): result["writer"] = self.writer
         if hasattr(self, "year"): result["year"] = self.year
-        return str(result)
+        return result
+
+    def __str__(self):
+        return str(self.to_object())

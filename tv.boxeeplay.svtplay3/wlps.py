@@ -41,9 +41,12 @@ class WlpsClient:
         return WlpsIterable(self, endpoint)
 
     def get_shows(self, category):
+        return self.get_shows_from_id(category["id"])
+
+    def get_shows_from_id(self, ident):
         url = self.get_list_endpoint("show")
-        url.add_param("category", category["id"])
-        #url.add_param("order_by", "title") # Not yet implemented server side! (gives us http code 500)
+        url.add_param("category", ident)
+        url.add_param("order_by", "title")
         return self.get_iterable(url)
 
     def get_recommended_episodes(self):
@@ -58,8 +61,11 @@ class WlpsClient:
         return self.get_iterable(url)
 
     def get_episodes(self, show):
+        return self.get_episodes_from_id(show["id"])
+
+    def get_episodes_from_id(self, ident):
         url = self.get_list_endpoint("episode")
-        url.add_param("show", show["id"])
+        url.add_param("show", ident)
         url.add_param("order_by", "-date_broadcasted")
         return self.get_iterable(url)
 
