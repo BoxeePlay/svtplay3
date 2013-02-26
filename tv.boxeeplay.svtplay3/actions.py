@@ -1,5 +1,5 @@
 ﻿import mc
-import svtmc as playmc
+from wlps import WlpsClient
 import time
 from logger import BPLog,BPTraceEnter,BPTraceExit,Level
 
@@ -15,8 +15,12 @@ def initiate():
     global focusedEpisodeNo
     global labelPrograms
     global labelEpisodes
+    global client
 
     BPTraceEnter()
+
+    client = WlpsClient()
+
     if len(mc.GetWindow(14000).GetList(1000).GetItems()) == 0:
         BPLog("No programs in program listing. Loading defaults.", Level.DEBUG)
         loadCategories()
@@ -38,13 +42,15 @@ def initiate():
     BPTraceExit()
 
 def loadCategories():
+    global client
+
     BPTraceEnter()
     mc.ShowDialogWait()
     win = mc.GetWindow(14000)
     time.sleep(0.001) #Äckelfulhack
     target = win.GetList(1000)
     time.sleep(0.001) #Äckelfulhack
-    cats = playmc.GetCategories()
+    cats = client.categories
     time.sleep(0.001) #Äckelfulhack
     target.SetItems(cats)
 #    mc.SetItems(14000, 1000, cats, 0)          # Documented but unsupported method
@@ -165,7 +171,7 @@ def setEpisodes(items,title):
     win.GetLabel(3002).SetLabel(title)
     if len(items) > 0:
         target.SetFocus()
-    
+
     BPTraceExit()
 
 def showLive():
