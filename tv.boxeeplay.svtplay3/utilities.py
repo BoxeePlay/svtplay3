@@ -16,9 +16,10 @@ class Url:
         self.params[key] = value
 
     def get_url(self):
-        params = ("=".join(tup) for tup in self.params.items())
-        url = self.url + "?" + "&".join(params)
-        return url
+        params = ["=".join(tup) for tup in self.params.items()]
+        params_str = ""
+        if params: params_str = "?" + "&".join(params)
+        return self.url + params_str
 
     def __repr__(self):
         return self.get_url()
@@ -27,7 +28,6 @@ def get_data(url):
     BPTraceEnter(str(url))
     BPLog("Getting data from: " + str(url))
     request = urllib2.Request(str(url))
-    request.add_header = [('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')]
     response = urllib2.urlopen(request)
     data = response.read()
     response.close();
