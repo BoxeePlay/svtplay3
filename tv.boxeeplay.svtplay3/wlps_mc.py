@@ -12,8 +12,11 @@ def show_to_list_item(item):
     list_item.SetProperty("id", item["id"])
     list_item.SetTitle(item["title"])
     list_item.SetLabel(item["title"])
-    list_item.SetThumbnail(get_image_size(item["thumbnail_url"], "small"))
-    list_item.SetIcon(get_image_size(item["thumbnail_url"], "medium"))
+    if item["thumbnail_url"] != "http://www.svtplay.se/public/images/play_default_large.jpg":
+        # Set thumbnail only if it is not the default svt image. UI can handle
+        # it better when it can detect whether a real thumb exists or not.
+        list_item.SetThumbnail(get_image_size(item["thumbnail_url"], "medium"))
+        #list_item.SetIcon(get_image_size(item["thumbnail_url"], "medium")) # ListItem.Icon in UI shows the Thumbnail ...
     return list_item
 
 def episode_to_list_item(item):
@@ -40,9 +43,20 @@ def episode_to_list_item(item):
     duration_array = item["length"].split()
     duration = sum(map(parse_duration, zip(duration_array[1::2], duration_array[::2])))
     list_item.SetDuration(duration)
-
-    list_item.SetThumbnail(get_image_size(item["thumbnail_url"], "small"))
-    list_item.SetIcon(get_image_size(item["thumbnail_url"], "medium"))
+    info = "Längd: " + item["length"]
+    info += "\nSändningsstart: " + item["date_broadcasted"].split("T")[0]
+    info += "\nTillgänglig till och med " + item["date_available_until"].split("T")[0]
+    info += {
+        1: "\nTyp: Avsnitt",
+        2: "\nTyp: Klipp"
+    }[item["kind_of"]]
+    info += {
+        1: "\nKan ses i hela världen",
+        2: "\nKan bara ses i Sverige"
+    }[item["viewable_in"]]
+    list_item.SetStudio(info)
+    list_item.SetThumbnail(get_image_size(item["thumbnail_url"], "medium"))
+    #list_item.SetIcon(get_image_size(item["thumbnail_url"], "medium")) # ListItem.Icon in UI shows the Thumbnail ...
     return list_item
 
 def get_image_size(url, size):

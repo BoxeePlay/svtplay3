@@ -179,67 +179,7 @@ def add_episodes(items, title):
     target.SetFocusedItem(focusedIndex)
     BPTraceExit()
 
-def showLive():
-    global selectedTitleId
-
-    BPTraceEnter()
-    mc.ShowDialogWait()
-    selectedTitleId = str("")
-    set_shows(mc.ListItems(), "")
-    set_episodes(mc.ListItems(), "")
-    try:
-            set_episodes(playmc.GetLiveEpisodes(), "Livesändningar")
-    except Exception, e:
-        BPLog("Could not show live episodes: %s" %e, Level.ERROR)
-    mc.HideDialogWait()
-    BPTraceExit()
-
-def showRecent():
-    global selectedTitleId
-
-    BPTraceEnter()
-    mc.ShowDialogWait()
-    selectedTitleId = str("")
-    set_shows(mc.ListItems(),"")
-    set_episodes(mc.ListItems(),"")
-    try:
-            set_episodes(playmc.GetRecentEpisodes(), "Senaste avsnitt")
-    except Exception, e:
-        BPLog("Could not show recent episodes: %s" %e, Level.ERROR)
-    mc.HideDialogWait()
-    BPTraceExit()
-
-def search():
-    global selectedTitleId
-
-    BPTraceEnter()
-    mc.ShowDialogWait()
-    selectedTitleId = str("")
-    set_shows(mc.ListItems(),"")
-    set_episodes(mc.ListItems(),"")
-    try:
-        searchTerm = mc.GetWindow(14000).GetEdit(110).GetText()
-        try:
-            searchTerm = searchTerm.decode("utf-8")
-            result = playmc.SearchEpisodesAndSamples(searchTerm.encode("latin-1"))
-            set_episodes(result, str(len(result)) + " träffar på \"" + searchTerm.encode("utf-8") + "\"")
-        except Exception, e:
-            BPLog("Could not search for %s: %s" %(searchTerm.encode("utf-8"), e), Level.ERROR)
-    except Exception, e:
-        BPLog("Could not search: %s" %e, Level.ERROR)
-    mc.HideDialogWait()
-    BPTraceExit()
-
-def appendSearch(str):
-    BPTraceEnter()
-    try:
-        searchBar = mc.GetWindow(14000).GetEdit(110)
-        searchBar.SetText(searchBar.GetText()+str)
-    except Exception, e:
-        BPLog("Could not append searchbar with %s. Exception: %s" %(str,e), Level.ERROR)
-    BPTraceExit()
-
-def playVideo():
+def play_video():
     global focusedCategoryNo
     global focusedTitleNo
     global focusedEpisodeNo
@@ -269,37 +209,3 @@ def playVideo():
     mc.GetPlayer().Play(item)
     BPTraceExit()
 
-def populateNextSamplesPage():
-    BPTraceEnter()
-    mc.ShowDialogWait()
-
-    try:
-        if len(selectedTitleId) > 0:
-            sampleList = mc.GetWindow(14000).GetList(3001)
-            # Remember the item that was focused when the action was initiated
-            originallyFocusedItemNo = sampleList.GetFocusedItem()
-            list = sampleList.GetItems()
-            # This check prevents loading of next page
-            # before the page to be loaded is loaded
-            # due to ondown triggered twice on the same item (ondown, up, ondown)
-            if originallyFocusedItemNo + 1 == len(list):
-                # There appears to be a bug in the SVT XML load routine so that
-                # the same item is loaded as both the last on page 2 (101-200) and
-                # the first on page 3 (201-300)
-                newItems = playmc.GetNextSamplesPage(selectedTitleId, sampleList)
-                if len(newItems) > 0:
-                    for newItem in newItems:
-                        list.append(newItem)
-                    # If the focused item is still the same (the last)
-                    # advance to the first newly loaded item
-                    # otherwise keep the focused item
-                    # if for example the user scrolled up during the load
-                    focusedItemNo = sampleList.GetFocusedItem()
-                    if focusedItemNo == originallyFocusedItemNo:
-                        focusedItemNo = focusedItemNo + 1
-                    sampleList.SetItems(list)
-                    sampleList.SetFocusedItem(focusedItemNo)
-    except Exception, e:
-        BPLog("Could not load next sample page. Exception: %s" %(e), Level.ERROR)
-    mc.HideDialogWait()
-    BPTraceExit()
