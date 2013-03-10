@@ -1,4 +1,5 @@
 import urllib2
+import simplejson as json
 from logger import BPLog, BPTraceEnter, BPTraceExit, Level
 
 class Url:
@@ -35,3 +36,17 @@ def get_data(url):
 
 def handleException(func, e):
     BPLog("In " + str(func) + ", " + str(e), Level.ERROR)
+
+def convert(input):
+    if isinstance(input, dict):
+        return dict((convert(key), convert(value)) for (key, value) in input.iteritems())
+    elif isinstance(input, list):
+        return [convert(element) for element in input]
+    elif isinstance(input, unicode):
+        return input.encode('utf-8')
+    else:
+        return input
+
+def load_json(url):
+    return convert(json.loads(get_data(str(url))))
+

@@ -1,8 +1,10 @@
-﻿import mc, time
+﻿import mc, time, ip_info
 from wlps import WlpsClient
 from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item
 from logger import BPLog,BPTraceEnter,BPTraceExit,Level
 from itertools import imap, islice
+
+VERSION = "SVTPlay 3.0.0"
 
 focusedCategoryNo = -1
 focusedTitleNo = -1
@@ -10,7 +12,14 @@ focusedEpisodeNo = -1
 labelPrograms = ""
 labelEpisodes = ""
 selectedTitleId = 0
-client = None
+client = WlpsClient()
+
+# TODO Do geo lookup in background..
+try:
+    is_sweden = ip_info.get_country_code() == "SE"
+except Exception, e:
+    is_sweden = True
+    BPLog("Could not retreive physical location of client: " + str(e))
 
 def initiate():
     global focusedCategoryNo
@@ -18,11 +27,10 @@ def initiate():
     global focusedEpisodeNo
     global labelPrograms
     global labelEpisodes
-    global client
 
     BPTraceEnter()
 
-    client = WlpsClient()
+    BPLog("We are in sweden: " + str(is_sweden))
 
     if len(mc.GetWindow(14000).GetList(1000).GetItems()) == 0:
         BPLog("No programs in program listing. Loading defaults.", Level.DEBUG)
@@ -42,6 +50,8 @@ def initiate():
         if focusedEpisodeNo >= 0:
             episodeList = mc.GetWindow(14000).GetList(3001)
             episodeList.SetFocusedItem(focusedEpisodeNo)
+
+    BPLog("Initiate complete. Sending tracking...")
     BPTraceExit()
 
 def loadCategories():

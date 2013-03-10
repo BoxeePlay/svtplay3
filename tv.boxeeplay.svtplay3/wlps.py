@@ -2,23 +2,12 @@
 #author:Andreas Pehrson
 #project:boxeeplay.tv
 
-import simplejson as json
-from utilities import get_data, handleException, Url
+from utilities import load_json, Url
 from logger import BPLog, Level
 
 BASE_URL = "http://api.welovepublicservice.se"
 
 __all__ = [ "WlpsClient", "WlpsIterable" ]
-
-def convert(input):
-    if isinstance(input, dict):
-        return dict((convert(key), convert(value)) for (key, value) in input.iteritems())
-    elif isinstance(input, list):
-        return [convert(element) for element in input]
-    elif isinstance(input, unicode):
-        return input.encode('utf-8')
-    else:
-        return input
 
 class WlpsClient:
     def __init__(self):
@@ -35,7 +24,7 @@ class WlpsClient:
         return self.url(self.endpoints[key]["list_endpoint"])
 
     def get_json(self, url):
-        return convert(json.loads(get_data(url)))
+        return load_json(url)
 
     def get_iterable(self, endpoint):
         return WlpsIterable(self, endpoint)

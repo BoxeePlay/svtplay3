@@ -1,3 +1,4 @@
+#encoding:utf-8
 # Must be run from same folder for relative import path to work!
 import sys
 sys.path.append("../tv.boxeeplay.svtplay3")
@@ -6,6 +7,7 @@ from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_it
 from logger import Level, BPLog, SetEnabledPlus
 import simplejson
 import itertools
+import ip_info
 
 SetEnabledPlus(Level.DEBUG, True)
 client = WlpsClient()
@@ -118,8 +120,8 @@ episode_item = episode_to_list_item(episode)
 BPLog("Transformed episode:")
 BPLog(simplejson.dumps(episode_item.to_object(), indent=2))
 
-
-# TODO
-#
-# Implement:
-# * Sort shows by title
+try:
+    BPLog("Is in sweden: " + str(ip_info.get_country_code() == "SE"))
+    BPLog("Country: " + ip_info.get_country_name() + ", Code: " + ip_info.get_country_code())
+except Exception, e:
+    BPLog(str(e))
