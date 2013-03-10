@@ -5,7 +5,7 @@ def LogError(msg):
     print str(datetime.now()) + ", " + str(msg)
 
 def ShowDialogNotification(msg, icon):
-    print("notification")
+    return None
 
 def ActivateWindow(nr):
     LogError("Activating window " + str(nr))

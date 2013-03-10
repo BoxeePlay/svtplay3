@@ -86,36 +86,45 @@ category_item = category_to_list_item(category)
 BPLog("Transformed category:")
 BPLog(simplejson.dumps(category_item.to_object(), indent=2))
 
-show     = {"episodes": [
-                "/v1/episode/9393/",
-                "/v1/episode/9396/",
-                "/v1/episode/9394/",
-                "/v1/episode/9395/",
-                "/v1/episode/13995/"
-            ],
-            "id": "463",
-            "resource_uri": "/v1/show/463/",
-            "title": "Akuten"}
+show = {
+        "category": "/v1/category/5/",
+        "episodes": [
+            "/v1/episode/4306/",
+            "/v1/episode/4307/"
+        ],
+        "id": "300",
+        "resource_uri": "/v1/show/300/",
+        "thumbnail": "shows/image_5_6.jpg",
+        "thumbnail_url": "http://www.svt.se/cachable_image/1356099963000/svts/article927529.svt/ALTERNATES/large/rapport_affisch_ny.jpg",
+        "title": "Rapport",
+        "url": "http://www.svtplay.se/rapport"
+    }
 show_item = show_to_list_item(show)
 BPLog("Transformed show:")
 BPLog(simplejson.dumps(show_item.to_object(), indent=2))
 
-episode = {"date_available_until": "2013-03-22T19:34:57.081480+00:00",
-           "date_broadcasted": "2012-03-22T14:10:00+00:00",
-           "date_created": "2013-02-12T20:34:57.439902+00:00",
-           "date_downloaded": None,
-           "description": "",
-           "http_status": 200,
-           "http_status_checked_date": "2013-02-24T22:00:03.605942+00:00",
-           "id": "9377",
-           "length": "1 h 23 sek",
-           "recommended": False,
-           "resource_uri": "/v1/episode/9377/",
-           "show": "/v1/show/462/",
-           "state": 0,
-           "thumbnail_url": "http://www.svt.se/cachable_image/1361790032000/svts/article1055275.svt/ALTERNATES/extralarge/lofvencamilla_992.jpg",
-           "title": "SVT Nyheter Live",
-           "url": "http://www.svtplay.se/video/116538/svt-nyheter-live-22-3"}
+episode = {
+        "date_available_until": "2013-03-13T22:04:28.295345+00:00",
+        "date_broadcasted": "2013-03-07T08:00:00+00:00",
+        "date_created": "2013-03-07T23:04:28.298583+00:00",
+        "date_downloaded": None,
+        "description": "SVT Rapport är Sveriges största nyhetsprogram med nyheter dygnet runt i SVT1, SVT Forum och SVT Play.",
+        "http_status": 200,
+        "http_status_checked_date": "2013-03-09T22:10:15.070459+00:00",
+        "id": "4307",
+        "kind_of": 1,
+        "length": "5 min",
+        "recommended": False,
+        "resource_uri": "/v1/episode/4307/",
+        "show": "/v1/show/300/",
+        "state": 0,
+        "thumbnail_url": "http://www.svt.se/cachable_image/1362644099000/svts/article1079534.svt/ALTERNATES/extralarge/default_title",
+        "title": "Rapport - 7/3 09:00 ",
+        "title_slug": "Rapport - 7-3 09:00",
+        "url": "http://www.svtplay.se/video/1079535/7-3-09-00",
+        "viewable_in": 1,
+        "viewable_on_device": 1
+    }
 episode_item = episode_to_list_item(episode)
 BPLog("Transformed episode:")
 BPLog(simplejson.dumps(episode_item.to_object(), indent=2))
