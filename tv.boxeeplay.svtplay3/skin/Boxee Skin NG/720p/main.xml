@@ -21,14 +21,14 @@
                 <texture>debuggrid.png</texture>
             </control-->
             <control type="label" id="14002">
-                <posx>0</posx>
-                <posy>0</posy>
-                <font>font18</font>
-                <aligny>center</aligny>
+                <posx>1000</posx>
+                <posy>23</posy>
+                <font>font28</font>
+                <aligny>bottom</aligny>
                 <align>left</align>
-                <textcolor>black</textcolor>
-                <info>System.BuildVersion</info>
-                <visible>false</visible>
+                <textcolor>white</textcolor>
+                <label></label>
+                <visible>true</visible>
             </control>
         </control>
 

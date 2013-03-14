@@ -1,5 +1,11 @@
 import mc
 
+outside_sweden = False
+
+def set_outside_sweden(out_of_swe):
+    global outside_sweden
+    outside_sweden = out_of_swe
+
 def category_to_list_item(item):
     list_item = mc.ListItem(mc.ListItem.MEDIA_UNKNOWN)
     list_item.SetProperty("id", item["id"])
@@ -28,7 +34,7 @@ def episode_to_list_item(item):
         list_item.SetProperty("clip", "true")
     if item["recommended"]: list_item.SetProperty("recommended", "true")
     if item["viewable_in"] == 1: list_item.SetProperty("viewable_in_world", "true")
-    if item["viewable_in"] == 1: list_item.SetWriter("true")
+    if outside_sweden and item["viewable_in"] == 1: list_item.SetWriter("true")
     list_item.SetProperty("id", item["id"])
     list_item.SetTitle(item["title"])
     list_item.SetLabel(item["title"])
@@ -51,10 +57,11 @@ def episode_to_list_item(item):
         1: "\nTyp: Avsnitt",
         2: "\nTyp: Klipp"
     }[item["kind_of"]]
-    info += {
-        1: "\nKan ses i hela världen",
-        2: "\nKan bara ses i Sverige"
-    }[item["viewable_in"]]
+    if outside_sweden:
+        info += {
+            1: "\nKan ses i hela världen",
+            2: "\nKan bara ses i Sverige"
+        }[item["viewable_in"]]
     list_item.SetStudio(info)
     list_item.SetThumbnail(get_image_size(item["thumbnail_url"], "medium"))
     #list_item.SetIcon(get_image_size(item["thumbnail_url"], "medium")) # ListItem.Icon in UI shows the Thumbnail ...

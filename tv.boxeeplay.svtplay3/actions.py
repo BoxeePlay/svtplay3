@@ -1,6 +1,6 @@
 ﻿import mc, time, ip_info
 from wlps import WlpsClient
-from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item
+from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item, set_outside_sweden
 from logger import BPLog,BPTraceEnter,BPTraceExit,Level
 from itertools import imap, islice
 
@@ -31,6 +31,12 @@ def initiate():
     BPTraceEnter()
 
     BPLog("We are in sweden: " + str(is_sweden))
+    if not is_sweden:
+        set_outside_sweden(True)
+        mc.GetWindow(14000).GetLabel(14002).SetLabel("Du är inte i Sverige")
+    else:
+        set_outside_sweden(False)
+        mc.GetWindow(14000).GetLabel(14002).SetLabel("")
 
     if len(mc.GetWindow(14000).GetList(1000).GetItems()) == 0:
         BPLog("No programs in program listing. Loading defaults.", Level.DEBUG)
