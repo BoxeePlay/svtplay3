@@ -464,6 +464,16 @@
                         <colordiffuse>FF858269</colordiffuse>
                         <info>ListItem.Thumb</info>
                     </control>
+                    <control type="image">
+                        <description>Geoblock overlay</description>
+                        <visible>IsEmpty(ListItem.Writer)</visible>
+                        <posx>5</posx>
+                        <posy>5</posy>
+                        <width>150</width>
+                        <height>84</height>
+                        <aspectratio>scale</aspectratio>
+                        <texture>sweden-only.png</texture>
+                    </control>
                     <control type="label">
                         <description>Episode title</description>
                         <posx>180</posx>
@@ -521,6 +531,16 @@
                         <height>180</height>
                         <aspectratio>scale</aspectratio>
                         <info>ListItem.Thumb</info>
+                    </control>
+                    <control type="image">
+                        <description>Geoblock overlay</description>
+                        <visible>IsEmpty(ListItem.Writer)</visible>
+                        <posx>10</posx>
+                        <posy>10</posy>
+                        <width>320</width>
+                        <height>180</height>
+                        <aspectratio>scale</aspectratio>
+                        <texture>sweden-only.png</texture>
                     </control>
                     <!--
                     <control type="label">
