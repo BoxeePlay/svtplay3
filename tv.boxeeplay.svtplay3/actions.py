@@ -3,6 +3,7 @@ from wlps import WlpsClient
 from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item, set_outside_sweden
 from logger import BPLog,BPTraceEnter,BPTraceExit,Level
 from itertools import imap, islice
+import mixpanel_client as tracker
 
 VERSION = "SVTPlay 3.0.0"
 
@@ -15,9 +16,12 @@ selectedTitleId = 0
 client = WlpsClient()
 
 # TODO Do geo lookup in background..
+# TODO Do tracking in background..
 try:
-    is_sweden = ip_info.get_country_code() == "SE"
+    country_code = ip_info.get_country_code()
+    is_sweden = country_code == "SE"
 except Exception, e:
+    country_code = "unknown"
     is_sweden = True
     BPLog("Could not retreive physical location of client: " + str(e))
 
@@ -43,6 +47,11 @@ def initiate():
         loadCategories()
         time.sleep(0.001) #Äckelfulhack
         load_recommended_episodes()
+        tracker.track("Initated", {"Locale": mc.GetGeoLocation(),
+                                   "Platform": mc.GetPlatform(),
+                                   "Country Code": country_code,
+                                   "In Sweden": str(is_sweden)
+                                   })
     else:
         #Restore last focus
         mc.GetWindow(14000).GetLabel(2001).SetLabel(labelPrograms)
@@ -57,7 +66,7 @@ def initiate():
             episodeList = mc.GetWindow(14000).GetList(3001)
             episodeList.SetFocusedItem(focusedEpisodeNo)
 
-    BPLog("Initiate complete. Sending tracking...")
+    BPLog("Initiate complete.")
     BPTraceExit()
 
 def loadCategories():
@@ -92,6 +101,9 @@ def load_shows(shows, title):
     except Exception, e:
         BPLog("Laddning av program misslyckades: %s" %e, Level.ERROR)
         mc.HideDialogWait()
+    tracker.track("Load Category", { "title": title,
+                                     "Id": mc.GetUniqueId()
+                                   })
     BPLog("Finished loading programs in category %s." %title, Level.DEBUG)
     BPTraceExit()
 
@@ -121,6 +133,9 @@ def load_episodes(episodes, title):
     except Exception, e:
         BPLog("Laddning av avsnitt misslyckades: %s" %e, Level.ERROR)
         mc.HideDialogWait()
+    tracker.track("Load Show", { "title": title,
+                                 "Id": mc.GetUniqueId()
+                               })
     BPLog("Finished loading episodes in category %s." %title, Level.DEBUG)
     BPTraceExit()
 
@@ -213,5 +228,15 @@ def play_video():
     item = episodeList.GetItem(focusedEpisodeNo)
     BPLog("Playing clip \"%s\" with path \"%s\" and bitrate %s." %(item.GetLabel(), item.GetPath(), item.GetProperty("bitrate")))
     mc.GetPlayer().Play(item)
+
+    if (item.GetProperty("episode")):
+        item_type="Episode"
+    else:
+        item_type="Clip"
+    tracker.track("Play", { "title": item.GetLabel(),
+                            "url": item.GetPath(),
+                            "Id": mc.GetUniqueId(),
+                            "type": item_type
+                            })
     BPTraceExit()
 
