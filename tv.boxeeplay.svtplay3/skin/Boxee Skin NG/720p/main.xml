@@ -466,7 +466,7 @@
                     </control>
                     <control type="image">
                         <description>Geoblock overlay</description>
-                        <visible>IsEmpty(ListItem.Writer)</visible>
+                        <visible>!IsEmpty(ListItem.Writer)</visible>
                         <posx>5</posx>
                         <posy>5</posy>
                         <width>150</width>
@@ -534,7 +534,7 @@
                     </control>
                     <control type="image">
                         <description>Geoblock overlay</description>
-                        <visible>IsEmpty(ListItem.Writer)</visible>
+                        <visible>!IsEmpty(ListItem.Writer)</visible>
                         <posx>10</posx>
                         <posy>10</posy>
                         <width>320</width>

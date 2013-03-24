@@ -34,7 +34,7 @@ def episode_to_list_item(item):
         list_item.SetProperty("clip", "true")
     if item["recommended"]: list_item.SetProperty("recommended", "true")
     if item["viewable_in"] == 1: list_item.SetProperty("viewable_in_world", "true")
-    if outside_sweden and item["viewable_in"] == 1: list_item.SetWriter("true")
+    if outside_sweden and item["viewable_in"] == 2: list_item.SetWriter("can't watch")
     list_item.SetProperty("id", item["id"])
     list_item.SetTitle(item["title"])
     list_item.SetLabel(item["title"])
