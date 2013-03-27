@@ -13,8 +13,9 @@ def category_to_list_item(item):
     list_item.SetLabel(item["title"])
     return list_item
 
-def show_to_list_item(item):
+def show_to_list_item(item, category="undefined"):
     list_item = mc.ListItem(mc.ListItem.MEDIA_UNKNOWN)
+    list_item.SetProperty("category", category)
     list_item.SetProperty("id", item["id"])
     list_item.SetTitle(item["title"])
     list_item.SetLabel(item["title"])
@@ -25,7 +26,7 @@ def show_to_list_item(item):
         #list_item.SetIcon(get_image_size(item["thumbnail_url"], "medium")) # ListItem.Icon in UI shows the Thumbnail ...
     return list_item
 
-def episode_to_list_item(item):
+def episode_to_list_item(item, category="undefined", show="undefined"):
     if item["kind_of"] == 1: # EPISODE
         list_item = mc.ListItem(mc.ListItem.MEDIA_VIDEO_EPISODE)
         list_item.SetProperty("episode", "true")
@@ -35,6 +36,8 @@ def episode_to_list_item(item):
     if item["recommended"]: list_item.SetProperty("recommended", "true")
     if item["viewable_in"] == 1: list_item.SetProperty("viewable_in_world", "true")
     if outside_sweden and item["viewable_in"] == 2: list_item.SetWriter("can't watch")
+    list_item.SetProperty("category", category)
+    list_item.SetProperty("show", show)
     list_item.SetProperty("id", item["id"])
     list_item.SetTitle(item["title"])
     list_item.SetLabel(item["title"])
