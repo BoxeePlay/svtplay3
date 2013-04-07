@@ -6,13 +6,14 @@ from itertools import islice
 import mixpanel_client as tracker
 
 VERSION = "SVTPlay 3.0.0"
+NO_SHOWS_TEXT = "Inga program laddade"
+NO_EPISODES_TEXT = "Inga avsnitt för det här programmet"
 
-focusedCategoryNo = -1
-focusedTitleNo = -1
-focusedEpisodeNo = -1
+category_list_index = -1
+show_list_index = -1
+episode_list_index = -1
 labelPrograms = ""
 labelEpisodes = ""
-selectedTitleId = 0
 client = WlpsClient()
 
 # TODO Do geo lookup in background..
@@ -26,9 +27,9 @@ except Exception, e:
     BPLog("Could not retreive physical location of client: " + str(e))
 
 def initiate():
-    global focusedCategoryNo
-    global focusedTitleNo
-    global focusedEpisodeNo
+    global category_list_index
+    global show_list_index
+    global episode_list_index
     global labelPrograms
     global labelEpisodes
 
@@ -37,7 +38,7 @@ def initiate():
     BPLog("We are in sweden: " + str(is_sweden))
     if not is_sweden:
         set_outside_sweden(True)
-        mc.GetWindow(14000).GetLabel(14002).SetLabel("Du är inte i Sverige")
+        mc.GetWindow(14000).GetLabel(14002).SetLabel("Du är inte i Sverige\nAllt material kan inte visas")
     else:
         set_outside_sweden(False)
         mc.GetWindow(14000).GetLabel(14002).SetLabel("")
@@ -56,15 +57,7 @@ def initiate():
         #Restore last focus
         mc.GetWindow(14000).GetLabel(2001).SetLabel(labelPrograms)
         mc.GetWindow(14000).GetLabel(3002).SetLabel(labelEpisodes)
-        if focusedCategoryNo >= 0:
-            categoryList = mc.GetWindow(14000).GetList(1000)
-            categoryList.SetFocusedItem(focusedCategoryNo)
-        if focusedTitleNo >= 0:
-            titleList = mc.GetWindow(14000).GetList(2000)
-            titleList.SetFocusedItem(focusedTitleNo)
-        if focusedEpisodeNo >= 0:
-            episodeList = mc.GetWindow(14000).GetList(3001)
-            episodeList.SetFocusedItem(focusedEpisodeNo)
+        restore_episode_list()
 
     BPLog("Initiate complete.")
     BPTraceExit()
@@ -74,6 +67,8 @@ def loadCategories():
     mc.ShowDialogWait()
     win = mc.GetWindow(14000)
     target = win.GetList(1000)
+    win.GetLabel(2003).SetLabel(NO_SHOWS_TEXT)
+    win.GetLabel(3003).SetLabel(NO_EPISODES_TEXT)
     items = mc.ListItems()
     for cat in client.categories:
         items.append(category_to_list_item(cat))
@@ -91,7 +86,6 @@ def load_shows_from_category():
 def load_shows(shows, category_item):
     BPTraceEnter()
     mc.ShowDialogWait()
-    set_shows([] , mc.ListItem())
     set_episodes([], mc.ListItem())
     try:
         set_shows(islice(shows, 0, 20), category_item)
@@ -110,26 +104,26 @@ def load_recommended_episodes():
     recommended_item = mc.ListItem()
     recommended_item.SetLabel("Rekommenderade program")
     recommended_item.SetProperty("category", "preset-category")
+    set_shows([], mc.ListItem())
     load_episodes(client.get_recommended_episodes(), recommended_item)
 
 def load_recent_episodes():
     recent_item = mc.ListItem()
     recent_item.SetLabel("Nya program")
     recent_item.SetProperty("category", "preset-category")
+    set_shows([], mc.ListItem())
     load_episodes(islice(client.get_latest_episodes(), 0, 40), recent_item)
 
 def load_episodes_from_show():
     cList = mc.GetWindow(14000).GetList(2000)
     cItem = cList.GetItem(cList.GetFocusedItem())
     episodes = client.get_episodes_from_id(cItem.GetProperty("id"))
+    store_show_list()
     load_episodes(episodes, cItem)
 
 def load_episodes(episodes, show_item):
-    global selectedTitleId
-
     BPTraceEnter()
     mc.ShowDialogWait()
-    set_episodes([], mc.ListItem())
     try:
         set_episodes(islice(episodes, 0, 20), show_item)
         mc.HideDialogWait()
@@ -146,6 +140,7 @@ def load_episodes(episodes, show_item):
 
 def set_shows(items, category_item):
     global labelPrograms
+    global show_list_index
 
     BPTraceEnter()
     win = mc.GetWindow(14000)
@@ -159,8 +154,12 @@ def set_shows(items, category_item):
     for item in items:
         mc_list.append(show_to_list_item(item, title))
     target.SetItems(mc_list)
+    show_list_index = 0
     if len(mc_list) > 0:
+        win.GetLabel(2003).SetLabel("")
         target.SetFocus()
+    else:
+        win.GetLabel(2003).SetLabel(NO_SHOWS_TEXT)
     BPTraceExit()
 
 def add_shows(items, category_item):
@@ -177,6 +176,7 @@ def add_shows(items, category_item):
 
 def set_episodes(items, show_item):
     global labelEpisodes
+    global episode_list_index
 
     BPTraceEnter()
     win = mc.GetWindow(14000)
@@ -193,9 +193,14 @@ def set_episodes(items, show_item):
                                            , title
                                            ))
     target.SetItems(mc_list)
+    episode_list_index = 0
 
     if len(mc_list) > 0:
+        win.GetLabel(3003).SetLabel("")
         target.SetFocus()
+    else:
+        win.GetLabel(3003).SetLabel(NO_EPISODES_TEXT)
+
     BPTraceExit()
 
 def add_episodes(items, show_item):
@@ -214,31 +219,17 @@ def add_episodes(items, show_item):
     BPTraceExit()
 
 def play_video():
-    global focusedCategoryNo
-    global focusedTitleNo
-    global focusedEpisodeNo
+    global category_list_index
+    global show_list_index
+    global episode_list_index
     BPTraceEnter()
 
     # Remember the selections in the lists
-    categoryList = mc.GetWindow(14000).GetList(1000)
-    if len(categoryList.GetItems()) > 0:
-        focusedCategoryNo = categoryList.GetFocusedItem()
-    else:
-        focusedCategoryNo = -1
+    store_category_list()
+    store_show_list()
+    store_episode_list()
 
-    titleList = mc.GetWindow(14000).GetList(2000)
-    if len(titleList.GetItems()) > 0:
-        focusedTitleNo = titleList.GetFocusedItem()
-    else:
-        focusedTitleNo = -1
-
-    episodeList = mc.GetWindow(14000).GetList(3001)
-    if len(episodeList.GetItems()) > 0:
-        focusedEpisodeNo = episodeList.GetFocusedItem()
-    else:
-        focusedEpisodeNo = -1
-
-    item = episodeList.GetItem(focusedEpisodeNo)
+    item = mc.GetWindow(14000).GetList(3001).GetItem(episode_list_index)
     BPLog("Playing clip \"%s\" with path \"%s\" and bitrate %s." %(item.GetLabel(), item.GetPath(), item.GetProperty("bitrate")))
     mc.GetPlayer().Play(item)
 
@@ -254,4 +245,61 @@ def play_video():
                             "category": item.GetProperty("category")
                             })
     BPTraceExit()
+
+def move_left_from_episode_list():
+    store_episode_list()
+    win = mc.GetWindow(14000)
+    menu = win.GetControl(100)
+    shows = win.GetList(2000)
+    if shows.GetItems():
+        restore_show_list()
+    else:
+        menu.SetFocus()
+
+def move_right_from_menu():
+    win = mc.GetWindow(14000)
+    shows = win.GetList(2000)
+    episodes = win.GetList(3001)
+    if shows.GetItems():
+        restore_show_list()
+    elif episodes.GetItems():
+        restore_episode_list()
+
+def move_left_from_show_list():
+    store_show_list()
+    mc.GetWindow(14000).GetControl(100).SetFocus()
+
+def move_right_from_show_list():
+    store_show_list()
+    win = mc.GetWindow(14000)
+    episodes = win.GetList(3001)
+    if episodes.GetItems():
+        restore_episode_list()
+
+def store_show_list():
+    global show_list_index
+    show_list_index = mc.GetWindow(14000).GetList(2000).GetFocusedItem()
+
+def restore_show_list():
+    win = mc.GetWindow(14000)
+    win.GetControl(2000).SetFocus()
+    win.GetList(2000).SetFocusedItem(show_list_index)
+
+def store_episode_list():
+    global episode_list_index
+    episode_list_index = mc.GetWindow(14000).GetList(3001).GetFocusedItem()
+
+def restore_episode_list():
+    win = mc.GetWindow(14000)
+    win.GetControl(3001).SetFocus()
+    win.GetList(3001).SetFocusedItem(episode_list_index)
+
+def store_category_list():
+    global category_list_index
+    category_list_index = mc.GetWindow(14000).GetList(1000).GetFocusedItem()
+
+def restore_category_list():
+    win = mc.GetWindow(14000)
+    win.GetControl(100).SetFocus()
+    win.GetList(1000).SetFocusedItem(category_list_index)
 
