@@ -85,3 +85,14 @@ def parse_duration((identifier, value)):
     if identifier == "sek":
         return int(value)
 
+def episode_list_item_to_playable(item):
+    play = mc.ListItem(item.GetMediaType())
+    play.SetPath(item.GetPath())
+    play.SetDescription(item.GetDescription())
+    play.SetTitle(item.GetTitle())
+    play.SetLabel(item.GetLabel())
+    play.SetDuration(item.GetDuration())
+    play.SetThumbnail(item.GetThumbnail())
+    play.SetIcon(item.GetIcon())
+    return play
+

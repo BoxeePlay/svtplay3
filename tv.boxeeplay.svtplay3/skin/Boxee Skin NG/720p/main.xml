@@ -394,7 +394,7 @@
                         <aligny>center</aligny>
                         <scroll>true</scroll>
                         <textcolor>white</textcolor>
-                        <info>ListItem.Title</info>
+                        <label>$INFO[ListItem.Label]</label>
                     </control>
                     <control type="label">
                         <description>Episode title selected</description>
@@ -408,7 +408,7 @@
                         <scroll>true</scroll>
                         <textcolor>black</textcolor>
                         <visible>Control.HasFocus(3001)</visible>
-                        <info>ListItem.Title</info>
+                        <label>$INFO[ListItem.Label]</label>
                     </control>
                     <control type="label">
                         <description>Common information</description>

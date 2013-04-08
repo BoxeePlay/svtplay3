@@ -1,13 +1,15 @@
 ﻿import mc, time, ip_info
 from wlps import WlpsClient
-from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item, set_outside_sweden
+from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item, set_outside_sweden, episode_list_item_to_playable
 from logger import BPLog,BPTraceEnter,BPTraceExit,Level
 from itertools import islice
+from urllib import quote_plus
 import mixpanel_client as tracker
 
 VERSION = "SVTPlay 3.0.0"
 NO_SHOWS_TEXT = "Inga program laddade"
 NO_EPISODES_TEXT = "Inga avsnitt för det här programmet"
+BX_JSACTIONS_URL = "http://boxeeplay.tv/bx-jsactions/svtplay3.js"
 
 category_list_index = -1
 show_list_index = -1
@@ -230,8 +232,11 @@ def play_video():
     store_episode_list()
 
     item = mc.GetWindow(14000).GetList(3001).GetItem(episode_list_index)
+    play_item = episode_list_item_to_playable(item)
+    play_item.SetPath("flash://boxeeplay.tv/src=%s&bx-jsactions=%s" %
+                      (quote_plus(play_item.GetPath()),quote_plus(BX_JSACTIONS_URL)))
     BPLog("Playing clip \"%s\" with path \"%s\" and bitrate %s." %(item.GetLabel(), item.GetPath(), item.GetProperty("bitrate")))
-    mc.GetPlayer().Play(item)
+    mc.GetPlayer().Play(play_item)
 
     if (item.GetProperty("episode")):
         item_type="Episode"
