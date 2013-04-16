@@ -40,7 +40,7 @@ def initiate():
     try:
         client = WlpsClient()
     except Exception, e:
-        BPLog("Could not set up API client: " + e)
+        BPLog("Could not set up API client: " + str(e))
         show_error_and_exit(message="Kunde inte kontakta API-servern. Appen stängs ner...")
 
     # TODO Do geo lookup in background..
@@ -108,8 +108,8 @@ def load_shows(shows, category_item):
         mc.HideDialogWait()
         add_shows(islice(shows, 20, None), category_item)
     except Exception, e:
-        BPLog("Laddning av program misslyckades: %s" %e, Level.ERROR)
         mc.HideDialogWait()
+        show_error_and_continue(message="Laddning av program misslyckades. Kollat internetanslutningen?\n\n" + str(e))
     tracker.track("Load Category", { "title": category_item.GetLabel(),
                                      "Id": mc.GetUniqueId()
                                    })
@@ -145,8 +145,8 @@ def load_episodes(episodes, show_item):
         mc.HideDialogWait()
         add_episodes(islice(episodes, 20, None), show_item)
     except Exception, e:
-        BPLog("Laddning av avsnitt misslyckades: %s" %e, Level.ERROR)
         mc.HideDialogWait()
+        show_error_and_continue(message="Laddning av avsnitt misslyckades. Kollat internetanslutningen?\n\n" + str(e))
     tracker.track("Load Show", { "title": show_item.GetLabel(),
                                  "Id": mc.GetUniqueId(),
                                  "category": show_item.GetProperty("category")
@@ -322,6 +322,9 @@ def restore_category_list():
     win.GetControl(100).SetFocus()
     win.GetList(1000).SetFocusedItem(category_list_index)
 
-def show_error_and_exit(title = "Tyvärr", msg = "Ett oväntat fel har inträffat. Appen stängs..."):
-    mc.ShowDialogOk(title, msg)
+def show_error_and_exit(title = "Tyvärr", message = "Ett oväntat fel har inträffat. Appen stängs..."):
+    show_error_and_continue(title, message)
     mc.CloseWindow()
+
+def show_error_and_continue(title = "Tyvärr", message = "Ett oväntat fel har inträffat. Appen stängs..."):
+    mc.ShowDialogOk(title, message)

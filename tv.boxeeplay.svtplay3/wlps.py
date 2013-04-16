@@ -2,7 +2,7 @@
 #author:Andreas Pehrson
 #project:boxeeplay.tv
 
-from utilities import load_json, Url, ConnectionError
+from utilities import load_json, Url
 from logger import BPLog, Level
 
 BASE_URL = "https://wlps.p.mashape.com"
@@ -26,10 +26,7 @@ class WlpsClient:
         return self.url(self.endpoints[key]["list_endpoint"])
 
     def get_json(self, url):
-        try:
-            return load_json(url, {"X-Mashape-Authorization": AUTH_KEY})
-        except ConnectionError, e:
-            BPLog(str(e))
+        return load_json(url, {"X-Mashape-Authorization": AUTH_KEY})
 
     def get_iterable(self, endpoint):
         return WlpsIterable(self, endpoint)
