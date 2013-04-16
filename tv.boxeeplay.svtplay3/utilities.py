@@ -1,6 +1,13 @@
+#encoding:utf-8
+#author:Andreas Pehrson
+#project:boxeeplay.tv
+
 import urllib2
 import simplejson as json
 from logger import BPLog, BPTraceEnter, BPTraceExit, Level
+
+class ConnectionError(Exception):
+    pass
 
 class Url:
     def __init__(self, url):
@@ -24,15 +31,22 @@ class Url:
     def __repr__(self):
         return self.get_url()
 
-def get_data(url):
+def get_data(url, headers = False):
     BPTraceEnter(str(url))
     BPLog("Getting data from: " + str(url))
-    request = urllib2.Request(str(url))
-    response = urllib2.urlopen(request)
-    data = response.read()
-    response.close();
-    BPTraceExit("Returning %s" % data)
-    return data
+    if headers:
+        request = urllib2.Request(str(url), headers=headers)
+    else:
+        request = urllib2.Request(str(url))
+
+    try:
+        response = urllib2.urlopen(request)
+        data = response.read()
+        response.close();
+        BPTraceExit("Returning %s" % data)
+        return data
+    except urllib2.URLError, e:
+        raise ConnectionError(e)
 
 def handleException(func, e):
     BPLog("In " + str(func) + ", " + str(e), Level.ERROR)
@@ -47,6 +61,6 @@ def convert(input):
     else:
         return input
 
-def load_json(url):
-    return convert(json.loads(get_data(str(url))))
+def load_json(url, headers = False):
+    return convert(json.loads(get_data(str(url), headers)))
 
