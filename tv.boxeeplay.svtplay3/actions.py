@@ -1,4 +1,8 @@
-﻿import mc, time, ip_info
+﻿#encoding:utf-8
+#author:Andreas Pehrson
+#project:boxeeplay.tv
+
+import mc, time, ip_info
 from wlps import WlpsClient
 from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item, set_outside_sweden, episode_list_item_to_playable
 from logger import BPLog,BPTraceEnter,BPTraceExit,Level
@@ -16,17 +20,9 @@ show_list_index = -1
 episode_list_index = -1
 labelPrograms = ""
 labelEpisodes = ""
-client = WlpsClient()
-
-# TODO Do geo lookup in background..
-# TODO Do tracking in background..
-try:
-    country_code = ip_info.get_country_code()
-    is_sweden = country_code == "SE"
-except Exception, e:
-    country_code = "unknown"
-    is_sweden = True
-    BPLog("Could not retreive physical location of client: " + str(e))
+client = None
+country_code = "unknown"
+is_sweden = True
 
 def initiate():
     global category_list_index
@@ -34,8 +30,26 @@ def initiate():
     global episode_list_index
     global labelPrograms
     global labelEpisodes
+    global country_code
+    global is_sweden
+    global client
 
     BPTraceEnter()
+    mc.ShowDialogWait()
+
+    try:
+        client = WlpsClient()
+    except Exception, e:
+        BPLog("Could not set up API client: " + e)
+        show_error_and_exit(message="Kunde inte kontakta API-servern. Appen stängs ner...")
+
+    # TODO Do geo lookup in background..
+    # TODO Do tracking in background..
+    try:
+        country_code = ip_info.get_country_code()
+        is_sweden = country_code == "SE"
+    except Exception, e:
+        BPLog("Could not retreive physical location of client: " + str(e))
 
     BPLog("We are in sweden: " + str(is_sweden))
     if not is_sweden:
@@ -308,3 +322,6 @@ def restore_category_list():
     win.GetControl(100).SetFocus()
     win.GetList(1000).SetFocusedItem(category_list_index)
 
+def show_error_and_exit(title = "Tyvärr", msg = "Ett oväntat fel har inträffat. Appen stängs..."):
+    mc.ShowDialogOk(title, msg)
+    mc.CloseWindow()
