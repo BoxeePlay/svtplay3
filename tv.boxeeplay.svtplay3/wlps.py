@@ -60,6 +60,44 @@ class WlpsClient:
         url.add_param("order_by", "-date_broadcasted")
         return self.get_iterable(url)
 
+    def get_channels(self):
+        svt1 = {"id": "1"
+               ,"kind_of": 3
+               ,"thumbnail_url": "http://www.boxeeplay.tv/images/svt1.jpg"
+               ,"title": "SVT1"
+               ,"url": "http://www.svtplay.se/kanaler/svt1"
+               ,"viewable_in": 2,
+               }
+        svt2 = {"id": "2"
+               ,"kind_of": 3
+               ,"thumbnail_url": "http://www.boxeeplay.tv/images/svt2.jpg"
+               ,"title": "SVT2"
+               ,"url": "http://www.svtplay.se/kanaler/svt2"
+               ,"viewable_in": 2,
+               }
+        barnkanalen = {"id": "3"
+               ,"kind_of": 3
+               ,"thumbnail_url": "http://www.boxeeplay.tv/images/barnkanalen.jpg"
+               ,"title": "Barnkanalen"
+               ,"url": "http://www.svtplay.se/kanaler/barnkanalen"
+               ,"viewable_in": 2,
+               }
+        svt24 = {"id": "4"
+               ,"kind_of": 3
+               ,"thumbnail_url": "http://www.boxeeplay.tv/images/svt24.jpg"
+               ,"title": "SVT24"
+               ,"url": "http://www.svtplay.se/kanaler/svt24"
+               ,"viewable_in": 2,
+               }
+        kunskapskanalen = {"id": "5"
+               ,"kind_of": 3
+               ,"thumbnail_url": "http://www.boxeeplay.tv/images/kunskapskanalen.jpg"
+               ,"title": "Kunskapskanalen"
+               ,"url": "http://www.svtplay.se/kanaler/kunskapskanalen"
+               ,"viewable_in": 2,
+               }
+        return [svt1, svt2, barnkanalen, svt24, kunskapskanalen]
+
 # NOT thread safe
 class WlpsIterable:
     def __init__(self, client, url):

@@ -19,6 +19,12 @@ def show_to_list_item(item, category="undefined"):
     list_item.SetProperty("id", item["id"])
     list_item.SetTitle(item["title"])
     list_item.SetLabel(item["title"])
+    list_item.SetPath(item["url"])
+    if "description" in item: list_item.SetDescription(item["description"])
+    if "viewable_in" in item and outside_sweden and item["viewable_in"] == 2: list_item.SetWriter("can't watch")
+    if "kind_of" in item and item["kind_of"] == 2: list_item.SetDirector("this is a clip")
+    if "kind_of" in item and item["kind_of"] == 3: list_item.SetArtist("this is live material")
+    if "kind_of" in item and item["kind_of"] > 0: list_item.SetProperty("playable", "True")
     if item["thumbnail_url"] != "http://www.svtplay.se/public/images/play_default_large.jpg":
         # Set thumbnail only if it is not the default svt image. UI can handle
         # it better when it can detect whether a real thumb exists or not.
@@ -36,6 +42,9 @@ def episode_to_list_item(item, category="undefined", show="undefined"):
     if item["recommended"]: list_item.SetProperty("recommended", "true")
     if item["viewable_in"] == 1: list_item.SetProperty("viewable_in_world", "true")
     if outside_sweden and item["viewable_in"] == 2: list_item.SetWriter("can't watch")
+    if item["kind_of"] == 2: list_item.SetDirector("this is a clip")
+    if item["kind_of"] == 3: list_item.SetArtist("this is live material")
+    list_item.SetProperty("playable", "True")
     list_item.SetProperty("category", category)
     list_item.SetProperty("show", show)
     list_item.SetProperty("id", item["id"])
@@ -87,7 +96,7 @@ def parse_duration((identifier, value)):
 
 def episode_list_item_to_playable(item):
     play = mc.ListItem(item.GetMediaType())
-    play.SetPath(item.GetPath())
+    play.SetPath(item.GetPath() + "?type=embed")
     play.SetDescription(item.GetDescription())
     play.SetTitle(item.GetTitle())
     play.SetLabel(item.GetLabel())
