@@ -191,12 +191,12 @@
                 </content>
                 <orientation>vertical</orientation>
                 <scrolltime>200</scrolltime>
-                <itemlayout width="350" height="202">
+                <itemlayout width="350" height="210">
                     <control type="label">
                         <posx>175</posx>
                         <posy>15</posy>
                         <width>320</width>
-                        <height>172</height>
+                        <height>180</height>
                         <font>font28</font>
                         <textcolor>white</textcolor>
                         <align>center</align>
@@ -207,16 +207,38 @@
                         <posx>15</posx>
                         <posy>15</posy>
                         <width>320</width>
-                        <height>172</height>
+                        <height>180</height>
+                        <colordiffuse>FF858269</colordiffuse>
                         <info>ListItem.Thumb</info>
                     </control>
+                    <control type="image">
+                        <description>Live image</description>
+                        <visible>!IsEmpty(ListItem.Artist)</visible>
+                        <posx>25</posx>
+                        <posy>25</posy>
+                        <width>48</width>
+                        <height>20</height>
+                        <aspectratio>scale</aspectratio>
+                        <colordiffuse>FF858269</colordiffuse>
+                        <texture>live-icon-anim.gif</texture>
+                    </control>
+                    <control type="image">
+                        <description>Geoblock overlay</description>
+                        <visible>!IsEmpty(ListItem.Writer)</visible>
+                        <posx>15</posx>
+                        <posy>15</posy>
+                        <width>320</width>
+                        <height>180</height>
+                        <aspectratio>scale</aspectratio>
+                        <texture>sweden-only.png</texture>
+                    </control>
                 </itemlayout>
-                <focusedlayout width="350" height="202">
+                <focusedlayout width="350" height="210">
                     <control type="image">
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>350</width>
-                        <height>202</height>
+                        <height>210</height>
                         <visible>Control.HasFocus(2000)</visible>
                         <texture border="15">searchbar_nofocus.png</texture>
                     </control>
@@ -224,7 +246,7 @@
                         <posx>175</posx>
                         <posy>15</posy>
                         <width>320</width>
-                        <height>172</height>
+                        <height>180</height>
                         <font>font28</font>
                         <textcolor>white</textcolor>
                         <align>center</align>
@@ -235,7 +257,7 @@
                         <posx>175</posx>
                         <posy>15</posy>
                         <width>320</width>
-                        <height>172</height>
+                        <height>180</height>
                         <font>font28</font>
                         <textcolor>black</textcolor>
                         <align>center</align>
@@ -247,8 +269,28 @@
                         <posx>15</posx>
                         <posy>15</posy>
                         <width>320</width>
-                        <height>172</height>
+                        <height>180</height>
                         <info>ListItem.Thumb</info>
+                    </control>
+                    <control type="image">
+                        <description>Live image</description>
+                        <visible>!IsEmpty(ListItem.Artist)</visible>
+                        <posx>25</posx>
+                        <posy>25</posy>
+                        <width>48</width>
+                        <height>20</height>
+                        <aspectratio>scale</aspectratio>
+                        <texture>live-icon-anim.gif</texture>
+                    </control>
+                    <control type="image">
+                        <description>Geoblock overlay</description>
+                        <visible>!IsEmpty(ListItem.Writer)</visible>
+                        <posx>15</posx>
+                        <posy>15</posy>
+                        <width>320</width>
+                        <height>180</height>
+                        <aspectratio>scale</aspectratio>
+                        <texture>sweden-only.png</texture>
                     </control>
                 </focusedlayout>
             </control>
@@ -318,6 +360,34 @@
                         <info>ListItem.Thumb</info>
                     </control>
                     <control type="image">
+                        <description>Live image</description>
+                        <visible>!IsEmpty(ListItem.Artist)</visible>
+                        <posx>20</posx>
+                        <posy>10</posy>
+                        <width>32</width>
+                        <height>14</height>
+                        <aspectratio>scale</aspectratio>
+                        <colordiffuse>FF858269</colordiffuse>
+                        <texture>live-icon-anim.gif</texture>
+                    </control>
+                    <control type="button">
+                        <description>Clip image</description>
+                        <visible>!IsEmpty(ListItem.Director)</visible>
+                        <label>K</label>
+                        <textcolor>FFBBBBBB</textcolor>
+                        <focusedcolor>FFBBBBBB</focusedcolor>
+                        <font>font16</font>
+                        <posx>20</posx>
+                        <posy>10</posy>
+                        <width>32</width>
+                        <height>32</height>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <colordiffuse>FF858269</colordiffuse>
+                        <texturenofocus border="16">green_gradient.png</texturenofocus>
+                        <texturefocus border="16">green_gradient.png</texturefocus>
+                    </control>
+                    <control type="image">
                         <description>Geoblock overlay</description>
                         <visible>!IsEmpty(ListItem.Writer)</visible>
                         <posx>15</posx>
@@ -373,6 +443,32 @@
                             <height>180</height>
                             <aspectratio>scale</aspectratio>
                             <info>ListItem.Thumb</info>
+                        </control>
+                        <control type="image">
+                            <description>Live image</description>
+                            <visible>!IsEmpty(ListItem.Artist)</visible>
+                            <posx>10</posx>
+                            <posy>10</posy>
+                            <width>48</width>
+                            <height>20</height>
+                            <aspectratio>scale</aspectratio>
+                            <texture>live-icon-anim.gif</texture>
+                        </control>
+                        <control type="button">
+                            <description>Clip image</description>
+                            <visible>!IsEmpty(ListItem.Director)</visible>
+                            <label>Klipp</label>
+                            <textcolor>white</textcolor>
+                            <focusedcolor>white</focusedcolor>
+                            <font>font16</font>
+                            <posx>10</posx>
+                            <posy>10</posy>
+                            <width>64</width>
+                            <height>32</height>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <texturenofocus border="16">green_gradient.png</texturenofocus>
+                            <texturefocus border="16">green_gradient.png</texturefocus>
                         </control>
                         <control type="image">
                             <description>Geoblock overlay</description>
