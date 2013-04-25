@@ -63,7 +63,7 @@
                 <posy>50</posy>
                 <width>190</width>
                 <height>40</height>
-                <label>Nytt</label>
+                <label>Kanaler</label>
                 <font>font22</font>
                 <textcolor>ffbcbdc0</textcolor>
                 <focusedcolor>white</focusedcolor>
@@ -74,7 +74,7 @@
                 <texturefocus border="10">button.png</texturefocus>
                 <alttexturefocus border="10">button.png</alttexturefocus>
                 <alttexturenofocus border="10">button_alt.png</alttexturenofocus>
-                <onclick lang="python"><![CDATA[actions.load_recent_episodes()]]></onclick>
+                <onclick lang="python"><![CDATA[actions.load_live()]]></onclick>
             </control>
             <control type="list" id="1000">
                 <description>Categories</description>
