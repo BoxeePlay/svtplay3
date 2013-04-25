@@ -15,9 +15,11 @@ NO_SHOWS_TEXT = "Inga program laddade"
 NO_EPISODES_TEXT = "Inga avsnitt för det här programmet"
 BX_JSACTIONS_URL = "http://boxeeplay.tv/bx-jsactions/svtplay3.js"
 
+initiated = False
 category_list_index = -1
 show_list_index = -1
 episode_list_index = -1
+focused_list = 1000
 labelPrograms = ""
 labelEpisodes = ""
 client = None
@@ -33,31 +35,35 @@ def initiate():
     global country_code
     global is_sweden
     global client
+    global initiated
 
     BPTraceEnter()
     mc.ShowDialogWait()
 
-    try:
-        client = WlpsClient()
-    except Exception, e:
-        BPLog("Could not set up API client: " + str(e))
-        show_error_and_exit(message="Kunde inte kontakta API-servern. Appen stängs ner...")
+    if not initiated:
+        try:
+            client = WlpsClient()
+        except Exception, e:
+            BPLog("Could not set up API client: " + str(e))
+            show_error_and_exit(message="Kunde inte kontakta API-servern. Appen stängs ner...")
 
-    # TODO Do geo lookup in background..
-    # TODO Do tracking in background..
-    try:
-        country_code = ip_info.get_country_code()
-        is_sweden = country_code == "SE"
-    except Exception, e:
-        BPLog("Could not retreive physical location of client: " + str(e))
+        # TODO Do geo lookup in background..
+        # TODO Do tracking in background..
+        try:
+            country_code = ip_info.get_country_code()
+            is_sweden = country_code == "SE"
+        except Exception, e:
+            BPLog("Could not retreive physical location of client: " + str(e))
 
-    BPLog("We are in sweden: " + str(is_sweden))
-    if not is_sweden:
-        set_outside_sweden(True)
-        mc.GetWindow(14000).GetLabel(14002).SetLabel("Du är inte i Sverige\nAllt material kan inte visas")
-    else:
-        set_outside_sweden(False)
-        mc.GetWindow(14000).GetLabel(14002).SetLabel("")
+        BPLog("We are in sweden: " + str(is_sweden))
+        if not is_sweden:
+            set_outside_sweden(True)
+            mc.GetWindow(14000).GetLabel(14002).SetLabel("Du är inte i Sverige\nAllt material kan inte visas")
+        else:
+            set_outside_sweden(False)
+            mc.GetWindow(14000).GetLabel(14002).SetLabel("")
+
+        initiated = True
 
     if len(mc.GetWindow(14000).GetList(1000).GetItems()) == 0:
         BPLog("No programs in program listing. Loading defaults.", Level.DEBUG)
@@ -73,7 +79,12 @@ def initiate():
         #Restore last focus
         mc.GetWindow(14000).GetLabel(2001).SetLabel(labelPrograms)
         mc.GetWindow(14000).GetLabel(3002).SetLabel(labelEpisodes)
-        restore_episode_list()
+
+        mc.GetWindow(14000).GetList(focused_list).SetFocus()
+        mc.GetWindow(14000).GetList(1000).SetFocusedItem(category_list_index)
+        mc.GetWindow(14000).GetList(2000).SetFocusedItem(show_list_index)
+        mc.GetWindow(14000).GetList(3001).SetFocusedItem(episode_list_index)
+        mc.HideDialogWait()
 
     BPLog("Initiate complete.")
     BPTraceExit()
@@ -94,10 +105,17 @@ def loadCategories():
     BPTraceExit()
 
 def load_shows_from_category():
+    global focused_list
+
     cList = mc.GetWindow(14000).GetList(1000)
+    focused_list = 1000
     cItem = cList.GetItem(cList.GetFocusedItem())
     shows = client.get_shows_from_id(cItem.GetProperty("id"))
     load_shows(shows, cItem)
+
+    latest_episodes_item = mc.ListItem()
+    latest_episodes_item.SetLabel("Senaste " + cItem.GetLabel())
+    set_episodes(latest_for_category, latest_episodes_item)
 
 def load_shows(shows, category_item):
     BPTraceEnter()
@@ -123,19 +141,25 @@ def load_recommended_episodes():
     set_shows([], mc.ListItem())
     load_episodes(client.get_recommended_episodes(), recommended_item)
 
-def load_recent_episodes():
-    recent_item = mc.ListItem()
-    recent_item.SetLabel("Nya program")
-    recent_item.SetProperty("category", "preset-category")
+def load_live():
+    live_item = mc.ListItem()
+    live_item.SetLabel("Kanaler")
+    live_item.SetProperty("category", "preset-category")
     set_shows([], mc.ListItem())
-    load_episodes(islice(client.get_latest_episodes(), 0, 40), recent_item)
+    load_shows(client.get_channels(), live_item)
 
 def load_episodes_from_show():
+    global focused_list
+
     cList = mc.GetWindow(14000).GetList(2000)
+    focused_list = 2000
     cItem = cList.GetItem(cList.GetFocusedItem())
-    episodes = client.get_episodes_from_id(cItem.GetProperty("id"))
-    store_show_list()
-    load_episodes(episodes, cItem)
+    if cItem.GetProperty("playable"):
+        play_item(cItem)
+    else:
+        episodes = client.get_episodes_from_id(cItem.GetProperty("id"))
+        store_show_list()
+        load_episodes(episodes, cItem)
 
 def load_episodes(episodes, show_item):
     BPTraceEnter()
@@ -235,6 +259,13 @@ def add_episodes(items, show_item):
     BPTraceExit()
 
 def play_video():
+    global focused_list
+
+    item = mc.GetWindow(14000).GetList(3001).GetItem(episode_list_index)
+    focused_list = 3001
+    play_item(item)
+
+def play_item(item):
     global category_list_index
     global show_list_index
     global episode_list_index
@@ -245,7 +276,6 @@ def play_video():
     store_show_list()
     store_episode_list()
 
-    item = mc.GetWindow(14000).GetList(3001).GetItem(episode_list_index)
     play_item = episode_list_item_to_playable(item)
     play_item.SetPath("flash://boxeeplay.tv/src=%s&bx-jsactions=%s" %
                       (quote_plus(play_item.GetPath()),quote_plus(BX_JSACTIONS_URL)))
