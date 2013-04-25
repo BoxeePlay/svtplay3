@@ -1,3 +1,6 @@
+boxee.setMode(boxee.PLAYER_MODE);
+boxee.realFullScreen = true;
+
 function hasEnded() {
     return browser.execute("svtplayer.SVTPlayer._instances.player.videoState;") == "end";
 };
@@ -19,12 +22,17 @@ function pause() {
     browser.execute("svtplayer.SVTPlayer._instances.player.pause();");
 };
 
+function isLive() {
+    return browser.execute("svtplayer.SVTPlayer._instances.player.isLiveBroadcast;") == "true";
+}
+
 function seekTo(i) {
     browser.execute("svtplayer.SVTPlayer._instances.player.seek(" + i.toString() + ",1,0);");
 };
 
 function isPlaying() {
-    return browser.execute("svtplayer.SVTPlayer._instances.player.video.isPlayingState;") == "true";
+    return browser.execute("svtplayer.SVTPlayer._instances.player.video.isReady;") == "true" &&
+        browser.execute("svtplayer.SVTPlayer._instances.player.video.isPlayingState;") == "true";
 };
 
 function isPaused() {
@@ -40,13 +48,14 @@ function duration() {
 };
 
 function updateState() {
-    playerState.canSeek = true
-    playerState.canSeekTo = true;
+    playerState.canSeek = !isLive();
+    playerState.canSeekTo = !isLive();
     playerState.canPause = true;
-    playerState.isPaused = isPaused();
-    playerState.canSetFullScreen = false;
-    playerState.time = time();
-    playerState.duration = duration();
+    playerState.isPaused = isLive() || isPaused();
+    playerState.canSetFullScreen = true;
+    playerState.time = isLive() ? 0 : time();
+    playerState.duration = isLive() ? 0 : duration();
+    playerState.progress = time() / duration() * 100;
 };
 
 function getDebugText() {
@@ -58,23 +67,20 @@ function isFullScreen() {
 };
 
 function setFullScreen() {
+    if (!isFullScreen()) {
+        setTimeout(setFullScreen, 500);
+    }
     for (var w1 in boxee.getWidgets()) {
         var widg = boxee.getWidgets()[w1];
         if (/svtplayer/.test(widg.getAttribute("id"))) {
-            widg.click(920, 520);
-            break;
+            widg.setActive();
         }
-    }
-    if (!isFullScreen()) {
-        setTimeout(setFullScreen, 100);
     }
 };
 
-boxee.onDocumentLoaded = function () {
-    boxee.realFullScreen = true;
-    boxee.setMode(boxee.PLAYER_MODE);
-    play();
+boxee.onDocumentLoading = function () {
     setTimeout(setFullScreen, 1000);
+    hasEndedPoll();
 };
 
 boxee.onPlay = play;
@@ -100,6 +106,8 @@ boxee.onBack = function () {
 boxee.onBigBack = function () {
     seekTo(time() - 30);
 };
+
+boxee.onSetFullScreen = setFullScreen;
 
 boxee.onUpdateState = updateState;
 
