@@ -124,21 +124,27 @@ def load_shows_from_category():
     focused_list = 1000
     cItem = cList.GetItem(cList.GetFocusedItem())
     category_id = cItem.GetProperty("id")
+
+    episodes = client.get_episodes_from_category_id(category_id)
+    latest_episodes_thread = AsyncTask(target=iterate, kwargs={"iterable":episodes, "limit":40})
+    latest_episodes_thread.start()
+
     shows = client.get_shows_from_id(category_id)
     load_shows(shows, cItem)
 
+    latest_episodes_thread.join()
     latest_episodes_item = mc.ListItem()
     latest_episodes_item.SetLabel("Senaste " + cItem.GetLabel())
-    latest_for_category = client.get_episodes_from_category_id(category_id)
-    set_episodes(islice(latest_for_category, 0, 20), latest_episodes_item)
+    latest_for_category = latest_episodes_thread.get_result()
+    add_episodes(latest_for_category, latest_episodes_item)
 
 def load_shows(shows, category_item):
     BPTraceEnter()
     mc.ShowDialogWait()
+    set_shows([], mc.ListItem())
     set_episodes([], mc.ListItem())
     try:
-        set_shows(islice(shows, 0, 20), category_item)
-        add_shows(islice(shows, 20, None), category_item)
+        set_shows(shows, category_item)
         mc.HideDialogWait()
     except Exception, e:
         mc.HideDialogWait()
@@ -154,7 +160,7 @@ def load_recommended_episodes():
     recommended_item.SetLabel("Rekommenderade program")
     recommended_item.SetProperty("category", "preset-category")
     set_shows([], mc.ListItem())
-    load_episodes(iterate(client.get_recommended_episodes(), 20), recommended_item)
+    load_episodes(iterate(client.get_recommended_episodes(), 40), recommended_item)
 
 def load_live():
     live_item = mc.ListItem()
@@ -179,9 +185,9 @@ def load_episodes_from_show():
 def load_episodes(episodes, show_item):
     BPTraceEnter()
     mc.ShowDialogWait()
+    set_episodes([], mc.ListItem())
     try:
-        set_episodes(islice(episodes, 0, 20), show_item)
-        add_episodes(islice(episodes, 20, None), show_item)
+        set_episodes(episodes, show_item)
         mc.HideDialogWait()
     except Exception, e:
         mc.HideDialogWait()
@@ -259,8 +265,15 @@ def set_episodes(items, show_item):
     BPTraceExit()
 
 def add_episodes(items, show_item):
+    global labelEpisodes
+
     BPTraceEnter()
     win = mc.GetWindow(14000)
+
+    title = show_item.GetLabel()
+    win.GetLabel(3002).SetLabel(title)
+    labelEpisodes = title
+
     target = win.GetList(3001)
     mc_list = target.GetItems()
     for item in items:
@@ -268,6 +281,9 @@ def add_episodes(items, show_item):
                                            , show_item.GetProperty("category")
                                            , show_item.GetLabel()
                                            ))
+    if len(mc_list) > 0:
+        win.GetLabel(3003).SetLabel("")
+
     focusedIndex = target.GetFocusedItem()
     target.SetItems(mc_list)
     target.SetFocusedItem(focusedIndex)
