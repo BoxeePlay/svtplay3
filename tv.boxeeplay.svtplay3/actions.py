@@ -21,7 +21,7 @@ initiated = False
 category_list_index = -1
 show_list_index = -1
 episode_list_index = -1
-focused_list = 1000
+focused_group = 100
 labelPrograms = ""
 labelEpisodes = ""
 client = None
@@ -90,12 +90,12 @@ def initiate():
                           })
     else:
         #Restore last focus
-        mc.GetWindow(14000).GetLabel(2001).SetLabel(labelPrograms)
+        mc.GetWindow(14000).GetLabel(2002).SetLabel(labelPrograms)
         mc.GetWindow(14000).GetLabel(3002).SetLabel(labelEpisodes)
 
-        mc.GetWindow(14000).GetList(focused_list).SetFocus()
+        mc.GetWindow(14000).GetControl(focused_group).SetFocus()
         mc.GetWindow(14000).GetList(1000).SetFocusedItem(category_list_index)
-        mc.GetWindow(14000).GetList(2000).SetFocusedItem(show_list_index)
+        mc.GetWindow(14000).GetList(2001).SetFocusedItem(show_list_index)
         mc.GetWindow(14000).GetList(3001).SetFocusedItem(episode_list_index)
         mc.HideDialogWait()
 
@@ -118,10 +118,10 @@ def loadCategories():
     BPTraceExit()
 
 def load_shows_from_category():
-    global focused_list
+    global focused_group
 
     cList = mc.GetWindow(14000).GetList(1000)
-    focused_list = 1000
+    focused_group = 100
     cItem = cList.GetItem(cList.GetFocusedItem())
     category_id = cItem.GetProperty("id")
 
@@ -170,10 +170,10 @@ def load_live():
     load_shows(client.get_channels(), live_item)
 
 def load_episodes_from_show():
-    global focused_list
+    global focused_group
 
-    cList = mc.GetWindow(14000).GetList(2000)
-    focused_list = 2000
+    cList = mc.GetWindow(14000).GetList(2001)
+    focused_group = 2000
     cItem = cList.GetItem(cList.GetFocusedItem())
     if cItem.GetProperty("playable"):
         play_item(cItem)
@@ -208,9 +208,9 @@ def set_shows(items, category_item):
 
     title = category_item.GetLabel()
     labelPrograms = title
-    win.GetLabel(2001).SetLabel(title)
+    win.GetLabel(2002).SetLabel(title)
 
-    target = win.GetList(2000)
+    target = win.GetList(2001)
     mc_list = mc.ListItems()
     for item in items:
         mc_list.append(show_to_list_item(item, title))
@@ -226,7 +226,7 @@ def set_shows(items, category_item):
 def add_shows(items, category_item):
     BPTraceEnter()
     win = mc.GetWindow(14000)
-    target = win.GetList(2000)
+    target = win.GetList(2001)
     mc_list = target.GetItems()
     for item in items:
         mc_list.append(show_to_list_item(item, category_item.GetLabel()))
@@ -290,10 +290,10 @@ def add_episodes(items, show_item):
     BPTraceExit()
 
 def click_episode():
-    global focused_list
+    global focused_group
 
-    focused_list = 3001
-    item_list = mc.GetWindow(14000).GetList(focused_list)
+    focused_group = 3000
+    item_list = mc.GetWindow(14000).GetList(3001)
     item = item_list.GetItem(item_list.GetFocusedItem())
     play_item(item)
 
@@ -331,7 +331,7 @@ def move_left_from_episode_list():
     store_episode_list()
     win = mc.GetWindow(14000)
     menu = win.GetControl(100)
-    shows = win.GetList(2000)
+    shows = win.GetList(2001)
     if shows.GetItems():
         restore_show_list()
     else:
@@ -339,7 +339,7 @@ def move_left_from_episode_list():
 
 def move_right_from_menu():
     win = mc.GetWindow(14000)
-    shows = win.GetList(2000)
+    shows = win.GetList(2001)
     episodes = win.GetList(3001)
     if shows.GetItems():
         restore_show_list()
@@ -359,12 +359,12 @@ def move_right_from_show_list():
 
 def store_show_list():
     global show_list_index
-    show_list_index = mc.GetWindow(14000).GetList(2000).GetFocusedItem()
+    show_list_index = mc.GetWindow(14000).GetList(2001).GetFocusedItem()
 
 def restore_show_list():
     win = mc.GetWindow(14000)
     win.GetControl(2000).SetFocus()
-    win.GetList(2000).SetFocusedItem(show_list_index)
+    win.GetList(2001).SetFocusedItem(show_list_index)
 
 def store_episode_list():
     global episode_list_index

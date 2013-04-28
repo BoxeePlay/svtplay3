@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <window type="window" id="14000">
-    <defaultcontrol always="true">100</defaultcontrol>
+    <defaultcontrol>100</defaultcontrol>
     <allowoverlay>no</allowoverlay>
     <onload lang="python">
 <![CDATA[actions.initiate()]]>
@@ -146,8 +146,8 @@
             </control>
         </control>
 
-        <control type="group" id="999">
-            <control type="label" id="2001">
+        <control type="group" id="2000">
+            <control type="label" id="2002">
                 <description>Category Label</description>
                 <posx>230</posx>
                 <posy>30</posy>
@@ -173,7 +173,7 @@
                 <aligny>center</aligny>
                 <label></label>
             </control>
-            <control type="list" id="2000">
+            <control type="list" id="2001">
                 <description>Programs</description>
                 <posx>230</posx>
                 <posy>90</posy>
@@ -239,7 +239,7 @@
                         <posy>0</posy>
                         <width>350</width>
                         <height>210</height>
-                        <visible>Control.HasFocus(2000)</visible>
+                        <visible>Control.HasFocus(2001)</visible>
                         <texture border="15">searchbar_nofocus.png</texture>
                     </control>
                     <control type="label">
@@ -262,7 +262,7 @@
                         <textcolor>black</textcolor>
                         <align>center</align>
                         <aligny>center</aligny>
-                        <visible>Control.HasFocus(2000)</visible>
+                        <visible>Control.HasFocus(2001)</visible>
                         <info>ListItem.Label</info>
                     </control>
                     <control type="image">
@@ -294,7 +294,9 @@
                     </control>
                 </focusedlayout>
             </control>
+        </control>
 
+        <control type="group" id="3000">
             <control type="label" id="3002">
                 <description>Category Label</description>
                 <posx>590</posx>
@@ -333,7 +335,7 @@
                 </onleft>
                 <content type="action">
                     <onclick lang="python">
-                         <![CDATA[actions.click_episode()]]>
+                        <![CDATA[actions.click_episode()]]>
                     </onclick>
                 </content>
                 <visible>IsEmpty(3003)</visible>
