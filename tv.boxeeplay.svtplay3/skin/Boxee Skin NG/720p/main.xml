@@ -333,7 +333,7 @@
                 </onleft>
                 <content type="action">
                     <onclick lang="python">
-                         <![CDATA[actions.play_video()]]>
+                         <![CDATA[actions.click_episode()]]>
                     </onclick>
                 </content>
                 <visible>IsEmpty(3003)</visible>

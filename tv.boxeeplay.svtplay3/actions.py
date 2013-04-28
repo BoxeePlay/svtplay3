@@ -258,11 +258,12 @@ def add_episodes(items, show_item):
     target.SetFocusedItem(focusedIndex)
     BPTraceExit()
 
-def play_video():
+def click_episode():
     global focused_list
 
-    item = mc.GetWindow(14000).GetList(3001).GetItem(episode_list_index)
     focused_list = 3001
+    item_list = mc.GetWindow(14000).GetList(focused_list)
+    item = item_list.GetItem(item_list.GetFocusedItem())
     play_item(item)
 
 def play_item(item):
