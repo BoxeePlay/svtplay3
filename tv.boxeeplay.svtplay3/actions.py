@@ -2,7 +2,7 @@
 #author:Andreas Pehrson
 #project:boxeeplay.tv
 
-import mc, time, ip_info
+import mc, ip_info
 from wlps import WlpsClient
 from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item, set_outside_sweden, episode_list_item_to_playable
 from logger import BPLog,BPTraceEnter,BPTraceExit,Level
@@ -10,6 +10,7 @@ from itertools import islice
 from urllib import quote_plus
 from trackerjob import TrackerJob
 from jobmanager import BoxeeJobManager
+from async_task import AsyncTask
 
 VERSION = "SVTPlay 3.0.0"
 NO_SHOWS_TEXT = "Inga program laddade"
@@ -53,6 +54,9 @@ def initiate():
             BPLog("Could not set up API client: " + str(e))
             show_error_and_exit(message="Kunde inte kontakta API-servern. Appen stängs ner...")
 
+        recommended_thread = AsyncTask(target=iterate, kwargs={"iterable":client.get_recommended_episodes(), "limit":20})
+        recommended_thread.start()
+
         ip_getter.join(1.0)
         try:
             country_code = ip_getter.get_country_code()
@@ -70,8 +74,12 @@ def initiate():
 
         BPLog("No programs in program listing. Loading defaults.", Level.DEBUG)
         loadCategories()
-        time.sleep(0.001) #Äckelfulhack
-        load_recommended_episodes()
+
+        recommended_thread.join()
+        recommended_item = mc.ListItem()
+        recommended_item.SetLabel("Rekommenderade program")
+        recommended_item.SetProperty("category", "preset-category")
+        load_episodes(recommended_thread.get_result(), recommended_item)
 
         initiated = True
 
@@ -122,7 +130,7 @@ def load_shows_from_category():
     latest_episodes_item = mc.ListItem()
     latest_episodes_item.SetLabel("Senaste " + cItem.GetLabel())
     latest_for_category = client.get_episodes_from_category_id(category_id)
-    set_episodes(islice(latest_for_category, 0, 40), latest_episodes_item)
+    set_episodes(islice(latest_for_category, 0, 20), latest_episodes_item)
 
 def load_shows(shows, category_item):
     BPTraceEnter()
@@ -130,8 +138,8 @@ def load_shows(shows, category_item):
     set_episodes([], mc.ListItem())
     try:
         set_shows(islice(shows, 0, 20), category_item)
-        mc.HideDialogWait()
         add_shows(islice(shows, 20, None), category_item)
+        mc.HideDialogWait()
     except Exception, e:
         mc.HideDialogWait()
         show_error_and_continue(message="Laddning av program misslyckades. Kollat internetanslutningen?\n\n" + str(e))
@@ -146,7 +154,7 @@ def load_recommended_episodes():
     recommended_item.SetLabel("Rekommenderade program")
     recommended_item.SetProperty("category", "preset-category")
     set_shows([], mc.ListItem())
-    load_episodes(client.get_recommended_episodes(), recommended_item)
+    load_episodes(iterate(client.get_recommended_episodes(), 20), recommended_item)
 
 def load_live():
     live_item = mc.ListItem()
@@ -173,8 +181,8 @@ def load_episodes(episodes, show_item):
     mc.ShowDialogWait()
     try:
         set_episodes(islice(episodes, 0, 20), show_item)
-        mc.HideDialogWait()
         add_episodes(islice(episodes, 20, None), show_item)
+        mc.HideDialogWait()
     except Exception, e:
         mc.HideDialogWait()
         show_error_and_continue(message="Laddning av avsnitt misslyckades. Kollat internetanslutningen?\n\n" + str(e))
@@ -372,3 +380,8 @@ def track(name, data):
         return
 
     job_manager.addJob(TrackerJob(name, data))
+
+def iterate(iterable, limit=None):
+    if limit is None:
+        return list(iterable)
+    return list(islice(iterable, 0, limit))
