@@ -8,7 +8,8 @@ from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_it
 from logger import BPLog,BPTraceEnter,BPTraceExit,Level
 from itertools import islice
 from urllib import quote_plus
-import mixpanel_client as tracker
+from trackerjob import TrackerJob
+from jobmanager import BoxeeJobManager
 
 VERSION = "SVTPlay 3.0.0"
 NO_SHOWS_TEXT = "Inga program laddade"
@@ -25,6 +26,7 @@ labelEpisodes = ""
 client = None
 country_code = "unknown"
 is_sweden = True
+job_manager = BoxeeJobManager()
 
 def initiate():
     global category_list_index
@@ -41,6 +43,8 @@ def initiate():
     mc.ShowDialogWait()
 
     if not initiated:
+        job_manager.start()
+
         try:
             client = WlpsClient()
         except Exception, e:
@@ -63,18 +67,18 @@ def initiate():
             set_outside_sweden(False)
             mc.GetWindow(14000).GetLabel(14002).SetLabel("")
 
-        initiated = True
-
-    if len(mc.GetWindow(14000).GetList(1000).GetItems()) == 0:
         BPLog("No programs in program listing. Loading defaults.", Level.DEBUG)
         loadCategories()
         time.sleep(0.001) #Äckelfulhack
         load_recommended_episodes()
-        tracker.track("Initated", {"Locale": mc.GetGeoLocation(),
-                                   "Platform": mc.GetPlatform(),
-                                   "Country Code": country_code,
-                                   "In Sweden": str(is_sweden)
-                                   })
+
+        initiated = True
+
+        track("Initated", { "Locale": mc.GetGeoLocation(),
+                            "Platform": mc.GetPlatform(),
+                            "Country Code": country_code,
+                            "In Sweden": str(is_sweden)
+                          })
     else:
         #Restore last focus
         mc.GetWindow(14000).GetLabel(2001).SetLabel(labelPrograms)
@@ -130,9 +134,9 @@ def load_shows(shows, category_item):
     except Exception, e:
         mc.HideDialogWait()
         show_error_and_continue(message="Laddning av program misslyckades. Kollat internetanslutningen?\n\n" + str(e))
-    tracker.track("Load Category", { "title": category_item.GetLabel(),
-                                     "Id": mc.GetUniqueId()
-                                   })
+    track("Load Category", { "title": category_item.GetLabel(),
+                             "Id": mc.GetUniqueId()
+                           })
     BPLog("Finished loading programs in category %s." %category_item.GetLabel(), Level.DEBUG)
     BPTraceExit()
 
@@ -173,10 +177,10 @@ def load_episodes(episodes, show_item):
     except Exception, e:
         mc.HideDialogWait()
         show_error_and_continue(message="Laddning av avsnitt misslyckades. Kollat internetanslutningen?\n\n" + str(e))
-    tracker.track("Load Show", { "title": show_item.GetLabel(),
-                                 "Id": mc.GetUniqueId(),
-                                 "category": show_item.GetProperty("category")
-                               })
+    track("Load Show", { "title": show_item.GetLabel(),
+                         "Id": mc.GetUniqueId(),
+                         "category": show_item.GetProperty("category")
+                       })
     BPLog("Finished loading episodes in category %s." %show_item.GetLabel(), Level.DEBUG)
     BPTraceExit()
 
@@ -289,13 +293,13 @@ def play_item(item):
         item_type="Episode"
     else:
         item_type="Clip"
-    tracker.track("Play", { "title": item.GetLabel(),
-                            "url": item.GetPath(),
-                            "Id": mc.GetUniqueId(),
-                            "type": item_type,
-                            "show": item.GetProperty("show"),
-                            "category": item.GetProperty("category")
-                            })
+    track("Play", { "title": item.GetLabel(),
+                    "url": item.GetPath(),
+                    "Id": mc.GetUniqueId(),
+                    "type": item_type,
+                    "show": item.GetProperty("show"),
+                    "category": item.GetProperty("category")
+                  })
     BPTraceExit()
 
 def move_left_from_episode_list():
@@ -361,3 +365,9 @@ def show_error_and_exit(title = "Tyvärr", message = "Ett oväntat fel har intr�
 
 def show_error_and_continue(title = "Tyvärr", message = "Ett oväntat fel har inträffat. Appen stängs..."):
     mc.ShowDialogOk(title, message)
+
+def track(name, data):
+    if not initiated:
+        return
+
+    job_manager.addJob(TrackerJob(name, data))
