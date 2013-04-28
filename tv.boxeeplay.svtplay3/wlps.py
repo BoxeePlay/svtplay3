@@ -60,6 +60,12 @@ class WlpsClient:
         url.add_param("order_by", "-date_broadcasted")
         return self.get_iterable(url)
 
+    def get_episodes_from_category_id(self, category_id):
+        url = self.get_list_endpoint("episode")
+        url.add_param("show__category", category_id)
+        url.add_param("order_by", "-date_broadcasted")
+        return self.get_iterable(url)
+
     def get_channels(self):
         svt1 = {"id": "1"
                ,"kind_of": 3

@@ -110,12 +110,14 @@ def load_shows_from_category():
     cList = mc.GetWindow(14000).GetList(1000)
     focused_list = 1000
     cItem = cList.GetItem(cList.GetFocusedItem())
-    shows = client.get_shows_from_id(cItem.GetProperty("id"))
+    category_id = cItem.GetProperty("id")
+    shows = client.get_shows_from_id(category_id)
     load_shows(shows, cItem)
 
     latest_episodes_item = mc.ListItem()
     latest_episodes_item.SetLabel("Senaste " + cItem.GetLabel())
-    set_episodes(latest_for_category, latest_episodes_item)
+    latest_for_category = client.get_episodes_from_category_id(category_id)
+    set_episodes(islice(latest_for_category, 0, 40), latest_episodes_item)
 
 def load_shows(shows, category_item):
     BPTraceEnter()
