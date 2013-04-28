@@ -2,61 +2,6 @@ import threading
 from logger import BPLog, Level
 
 '''
-Boxee Job Manager
-An easily extensible threaded job manager that works in Boxee.
-
-Written by /rob, 9 March 2011
-
-Usage:
-A common requirement of Boxee apps is to run some code at an interval without blocking the thread in which Boxee apps execute most of
-their code.  To address this increasingly common requirement, I put together this interface to create your own arbitrarily defined jobs
-and had them off to a "Job Manager" that runs in its own thread, letting your GUI onclick events and the like run without waiting for it
-to return.
-
-The most commonly needed job is for a webservice to be called every n seconds while video plays.  To use the JobManager in this instance,
-simply create your job by extending the BoxeeJob class, instantiate the JobManager, add your custom Job to the manager, and start it
-before executing mc.GetPlayer().Play().
-
-Examples:
-
-Instantiate object:
-myJobManager = BoxeeJobManager()
-
-Process job queue every 30 seconds (instead of default 10):
-myJobManager = BoxeeJobManager(30)
-
-Add job to Job Manager:
-
-myJob = BoxeeJob()
-myJobManager.addJob(myJob)
-
-Start Job Manager:
-myJobManager.start()
-
-Stop Job Manager:
-myJobManager.stop()
-
-Extending the Job Object:
-The job object is your primary interface for creating and executing Jobs with the Job Manager.  Here is an easy hello world example where
-the string "Hello, world!" is printed to your Boxee debug log every ten seconds.
-
-import mc
-import jobmanager
-class HelloWorldJob(jobmanager.BoxeeJob):
-    # Add your own variables to constructor.
-    def __init__(self, message, interval):
-        self.message = message
-        self.interval = interval
-        # Be sure to always inherit the constructor from the base BoxeeJob class.
-        jobmanager.BoxeeJob.__init__(self, "HelloWorld", interval)
-
-    def process(self):
-        # This is the base function that is always called for every job and the one you should extend.
-        mc.LogDebug(self.message)
-'''
-
-
-'''
 Job Manager Object
 '''
 class BoxeeJobManager(threading.Thread):
