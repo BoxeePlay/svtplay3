@@ -27,6 +27,7 @@ client = None
 country_code = "unknown"
 is_sweden = True
 job_manager = BoxeeJobManager()
+ip_getter = ip_info.IpGetter()
 
 def initiate():
     global category_list_index
@@ -44,6 +45,7 @@ def initiate():
 
     if not initiated:
         job_manager.start()
+        ip_getter.start()
 
         try:
             client = WlpsClient()
@@ -51,10 +53,9 @@ def initiate():
             BPLog("Could not set up API client: " + str(e))
             show_error_and_exit(message="Kunde inte kontakta API-servern. Appen stängs ner...")
 
-        # TODO Do geo lookup in background..
-        # TODO Do tracking in background..
+        ip_getter.join(1.0)
         try:
-            country_code = ip_info.get_country_code()
+            country_code = ip_getter.get_country_code()
             is_sweden = country_code == "SE"
         except Exception, e:
             BPLog("Could not retreive physical location of client: " + str(e))
