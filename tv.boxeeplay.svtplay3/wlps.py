@@ -38,6 +38,7 @@ class WlpsClient:
         url = self.get_list_endpoint("show")
         url.add_param("category", ident)
         url.add_param("order_by", "title")
+        url.add_param("limit", "1000")
         return self.get_iterable(url)
 
     def get_recommended_episodes(self):
@@ -49,6 +50,7 @@ class WlpsClient:
     def get_latest_episodes(self):
         url = self.get_list_endpoint("episode")
         url.add_param("order_by", "-date_broadcasted")
+        url.add_param("limit", "100")
         return self.get_iterable(url)
 
     def get_episodes(self, show):
@@ -58,12 +60,14 @@ class WlpsClient:
         url = self.get_list_endpoint("episode")
         url.add_param("show", ident)
         url.add_param("order_by", "-date_broadcasted")
+        url.add_param("limit", "1000")
         return self.get_iterable(url)
 
     def get_episodes_from_category_id(self, category_id):
         url = self.get_list_endpoint("episode")
         url.add_param("show__category", category_id)
         url.add_param("order_by", "-date_broadcasted")
+        url.add_param("limit", "100")
         return self.get_iterable(url)
 
     def get_channels(self):
@@ -142,7 +146,7 @@ class WlpsIterator:
         if self.current >= len(self.iterable.objects):
             BPLog("API reported length of " + str(self.iterable.size) +
                   " but I reached the end at " + str(self.current) +
-                  " items. Stopping.", Level.ERROR)
+                  " items. Stopping.", Level.DEBUG)
             raise StopIteration # if we got more objects but the list was not filled as expected
         #BPLog("objects length: " + str(len(self.iterable.objects)) + ", current: " + str(self.current - 1) + ", size: " + str(self.iterable.size) + ", current_limit: " + str(self.iterable.current_limit))
         return self.iterable.objects[self.current]
