@@ -15,7 +15,6 @@ function hasEndedPoll() {
 
 function play() {
     browser.execute("svtplayer.SVTPlayer._instances.player.play();");
-    hasEndedPoll();
 };
 
 function pause() {
@@ -31,7 +30,7 @@ function seekTo(i) {
 };
 
 function isPlaying() {
-    return browser.execute("svtplayer.SVTPlayer._instances.player.video.isReady;") == "true" &&
+    return browser.execute("svtplayer.SVTPlayer._instances.player.video.isReady;") != "true" ||
         browser.execute("svtplayer.SVTPlayer._instances.player.video.isPlayingState;") == "true";
 };
 
@@ -51,7 +50,7 @@ function updateState() {
     playerState.canSeek = !isLive();
     playerState.canSeekTo = !isLive();
     playerState.canPause = true;
-    playerState.isPaused = isLive() || isPaused();
+    playerState.isPaused = isPaused();
     playerState.canSetFullScreen = true;
     playerState.time = isLive() ? 0 : time();
     playerState.duration = isLive() ? 0 : duration();
