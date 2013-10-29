@@ -91,6 +91,7 @@ def initiate():
         track("Initated", { "Locale": mc.GetGeoLocation(),
                             "Platform": mc.GetPlatform(),
                             "Country Code": country_code,
+                            "Id": mc.GetUniqueId(),
                             "In Sweden": str(is_sweden)
                           })
     else:
