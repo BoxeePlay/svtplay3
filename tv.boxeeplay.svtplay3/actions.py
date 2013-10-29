@@ -51,6 +51,11 @@ def initiate():
         try:
             client = WlpsClient()
         except Exception, e:
+            track ("Wlps Init Error", { "Locale": mc.GetGeoLocation(),
+                                        "Platform": mc.GetPlatform(),
+                                        "Country Code": country_code,
+                                        "Id": mc.GetUniqueId()
+                                      })
             BPLog("Could not set up API client: " + str(e))
             show_error_and_exit(message="Kunde inte kontakta API-servern. Appen stängs ner...")
 
