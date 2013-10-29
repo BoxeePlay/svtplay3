@@ -154,9 +154,9 @@ def load_shows(shows, category_item):
         mc.HideDialogWait()
     except Exception, e:
         mc.HideDialogWait()
-        track("Timeout Category", { "title": category_item.GetLabel(),
-                                    "Id": mc.GetUniqueId()
-                                  })
+        track("Category Error", { "title": category_item.GetLabel(),
+                                  "Id": mc.GetUniqueId()
+                                })
         show_error_and_continue(message="Laddning av program misslyckades. Kollat internetanslutningen?\n\n" + str(e))
     track("Load Category", { "title": category_item.GetLabel(),
                              "Id": mc.GetUniqueId()
@@ -200,10 +200,10 @@ def load_episodes(episodes, show_item):
         mc.HideDialogWait()
     except Exception, e:
         mc.HideDialogWait()
-        track("Timeout Show", { "title": show_item.GetLabel(),
-                                "Id": mc.GetUniqueId(),
-                                "category": show_item.GetProperty("category")
-                              })
+        track("Show Error", { "title": show_item.GetLabel(),
+                              "Id": mc.GetUniqueId(),
+                              "category": show_item.GetProperty("category")
+                            })
         show_error_and_continue(message="Laddning av avsnitt misslyckades. Kollat internetanslutningen?\n\n" + str(e))
     track("Load Show", { "title": show_item.GetLabel(),
                          "Id": mc.GetUniqueId(),
