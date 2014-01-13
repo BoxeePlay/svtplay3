@@ -4,9 +4,9 @@
 
 import mc, ip_info
 from wlps import WlpsClient
-from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item, set_outside_sweden, episode_list_item_to_playable
+from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item, set_outside_sweden, episode_list_item_to_playable, has_episodes
 from logger import BPLog,BPTraceEnter,BPTraceExit,Level
-from itertools import islice
+from itertools import islice, ifilter
 from urllib import quote_plus
 from trackerjob import TrackerJob
 from jobmanager import BoxeeJobManager
@@ -136,6 +136,7 @@ def load_shows_from_category():
     latest_episodes_thread.start()
 
     shows = client.get_shows_from_id(category_id)
+    shows = ifilter(has_episodes, shows)
     load_shows(shows, cItem)
 
     latest_episodes_thread.join()

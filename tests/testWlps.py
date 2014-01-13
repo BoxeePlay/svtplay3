@@ -3,7 +3,7 @@
 import sys
 sys.path.append("../tv.boxeeplay.svtplay3")
 from wlps import WlpsClient
-from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item
+from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item, has_episodes
 from logger import Level, BPLog, SetEnabledPlus
 import simplejson
 import itertools
@@ -32,6 +32,10 @@ shows = []
 shows.extend(client.get_shows(categories[2]))
 #BPLog(simplejson.dumps(shows, indent=2))
 BPLog("Fetched " + str(len(shows)) + " shows for category nr 2: " + categories[2]["title"])
+
+filtered_shows = []
+filtered_shows.extend(itertools.ifilter(has_episodes, shows))
+BPLog("Fetched " + str(len(filtered_shows)) + " shows with episodes for category nr 2: " + categories[2]["title"])
 
 episodes = []
 episodes.extend(client.get_episodes(shows[7]))

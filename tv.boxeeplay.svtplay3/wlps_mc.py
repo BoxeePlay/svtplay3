@@ -32,6 +32,9 @@ def show_to_list_item(item, category="undefined"):
         #list_item.SetIcon(get_image_size(item["thumbnail_url"], "medium")) # ListItem.Icon in UI shows the Thumbnail ...
     return list_item
 
+def has_episodes(show_item):
+    return len(show_item["episodes"]) > 0
+
 def episode_to_list_item(item, category="undefined", show="undefined"):
     if item["kind_of"] == 1: # EPISODE
         list_item = mc.ListItem(mc.ListItem.MEDIA_VIDEO_EPISODE)
