@@ -1,0 +1,34 @@
+#!/bin/sh
+
+cd "$(dirname "$0")"
+
+REPO=tv.boxeeplay.svtplay3
+if [[ `uname -s` == Darwin* ]]
+then
+    echo "Deleting compiled files from $REPO"
+    find "$REPO" -iregex ".*\.pyc" | xargs rm
+
+    echo "Backing up original descriptor"
+    DESCRIPTOR=$REPO/descriptor.xml
+    DSC_BACKUP=descriptor.xml.bkp
+    if [ -f "$DSC_BACKUP" ]
+    then
+        echo "Descriptor backup already exists. Caused by an earlier crash?"
+        echo "Make sure $DESCRIPTOR looks OK and delete $DSC_BACKUP to continue."
+        exit 1
+    fi
+    cp "$DESCRIPTOR" "$DSC_BACKUP"
+
+    echo "Removing test-app element from descriptor"
+    sed '/test-app.*true.*\/test-app/d' "$DSC_BACKUP" > "$DESCRIPTOR"
+
+    echo "Packaging application zip file"
+    zip -qr "$REPO.zip" "$REPO"
+
+    echo "Restoring original descriptor"
+    rm "$DESCRIPTOR" && mv "$DSC_BACKUP" "$DESCRIPTOR"
+
+    echo "Done."
+else
+    echo "Your platform is currently not supported."
+fi
