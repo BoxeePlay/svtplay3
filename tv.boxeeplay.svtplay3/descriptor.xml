@@ -16,4 +16,5 @@ Version 3.05</description>
    <startWindow>start</startWindow>
    <platform>all</platform>
    <minversion>1.0</minversion>
+   <test-app>true</test-app>
 </app>
