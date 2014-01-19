@@ -36,6 +36,15 @@ def has_episodes(show_item):
     return len(show_item["episodes"]) > 0
 
 def episode_to_list_item(item, category="undefined", show="undefined"):
+    if item["date_broadcasted"] is None: return None
+    if item["date_available_until"] is None: return None
+    if item["description"] is None: return None
+    if item["id"] is None: return None
+    if item["length"] is None: return None
+    if item["thumbnail_url"] is None: return None
+    if item["title"] is None: return None
+    if item["url"] is None: return None
+
     info = ""
     if item["kind_of"] == 1: # EPISODE
         list_item = mc.ListItem(mc.ListItem.MEDIA_VIDEO_EPISODE)
@@ -56,35 +65,40 @@ def episode_to_list_item(item, category="undefined", show="undefined"):
     list_item.SetLabel(item["title"])
     list_item.SetPath(item["url"])
     list_item.SetDescription(item["description"], False)
-    if item["length"] is not None:
-        list_item.SetProperty("length", item["length"])
-        duration_array = item["length"].split()
-        duration = sum(map(parse_duration, zip(duration_array[1::2], duration_array[::2])))
-        list_item.SetDuration(duration)
-        info += "Längd: " + item["length"]
-    if item["date_broadcasted"] is not None:
-        list_item.SetProperty("date_broadcasted", item["date_broadcasted"])
-        date_array = item["date_broadcasted"].split("T")[0].split("-")
-        list_item.SetDate(int(date_array[0]),
-                        int(date_array[1]),
-                        int(date_array[2]))
-        info += "\nSändningsstart: " + item["date_broadcasted"].split("T")[0]
-    if item["date_available_until"] is not None:
-        list_item.SetProperty("date_available_until", item["date_available_until"])
-        info += "\nTillgänglig till och med " + item["date_available_until"].split("T")[0]
+
+    # Length
+    list_item.SetProperty("length", item["length"])
+    duration_array = item["length"].split()
+    duration = sum(map(parse_duration, zip(duration_array[1::2], duration_array[::2])))
+    list_item.SetDuration(duration)
+    info += "Längd: " + item["length"]
+
+    # Broadcast date
+    list_item.SetProperty("date_broadcasted", item["date_broadcasted"])
+    date_array = item["date_broadcasted"].split("T")[0].split("-")
+    list_item.SetDate(int(date_array[0]),
+                    int(date_array[1]),
+                    int(date_array[2]))
+    info += "\nSändningsstart: " + item["date_broadcasted"].split("T")[0]
+
+    # Availability window end date
+    list_item.SetProperty("date_available_until", item["date_available_until"])
+    info += "\nTillgänglig till och med " + item["date_available_until"].split("T")[0]
+
     info += {
         1: "\nTyp: Avsnitt",
         2: "\nTyp: Klipp"
     }[item["kind_of"]]
+
     if outside_sweden:
         info += {
             1: "\nKan ses i hela världen",
             2: "\nKan bara ses i Sverige"
         }[item["viewable_in"]]
     list_item.SetStudio(info)
-    if item["thumbnail_url"] is not None:
-        list_item.SetThumbnail(get_image_size(item["thumbnail_url"], "medium"))
-        list_item.SetIcon(get_image_size(item["thumbnail_url"], "medium")) # ListItem.Icon in UI shows the Thumbnail ...
+
+    list_item.SetThumbnail(get_image_size(item["thumbnail_url"], "medium"))
+    list_item.SetIcon(get_image_size(item["thumbnail_url"], "medium")) # ListItem.Icon in UI shows the Thumbnail ...
     return list_item
 
 def get_image_size(url, size):

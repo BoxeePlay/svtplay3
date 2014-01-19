@@ -271,10 +271,11 @@ def set_episodes(items, show_item):
     target = win.GetList(3001)
     mc_list = mc.ListItems()
     for item in items:
-        mc_list.append(episode_to_list_item( item
-                                           , show_item.GetProperty("category")
-                                           , title
-                                           ))
+        list_item = episode_to_list_item( item
+                                        , show_item.GetProperty("category")
+                                        , title
+                                        )
+        if list_item: mc_list.append(list_item)
     target.SetItems(mc_list)
     episode_list_index = 0
 
