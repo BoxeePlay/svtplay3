@@ -27,12 +27,14 @@ def filter_max_bitrate(streams, limit=-1):
         if limit <= 0 or bandwidth_from_stream(stream) <= limit: yield stream
 
 def bandwidth_from_stream(stream):
-    return int(stream["meta"]["quality"].split(' ', 1)[0])
+    try: return int(stream["meta"]["quality"].split(' ', 1)[0])
+    except: return -1
 
 def cmp_bandwidth(a, b):
     return cmp(bandwidth_from_stream(a), bandwidth_from_stream(b))
 
 def boxeespecific_quality_from_stream(stream):
+    if bandwidth_from_stream(stream) < 0: return 'A'
     if bandwidth_from_stream(stream) < 1000: return '0'
     else: return '1'
 
