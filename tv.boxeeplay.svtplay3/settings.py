@@ -25,7 +25,7 @@ def activate_stream_source_selection():
 
     opt_pirateplay = "Pirateplay om möjligt"
     opt_webonly = "Endast webbläsaren"
-    if get_use_pirateplay(): opt_pirateplay = "[valt] " + opt_pirateplay
+    if use_pirateplay(): opt_pirateplay = "[valt] " + opt_pirateplay
     else: opt_webonly = "[valt] " + opt_webonly
     decision = mc.ShowDialogSelect("Ändra Uppspelningskälla", [opt_pirateplay, opt_webonly])
 
@@ -45,7 +45,7 @@ def activate_bitrate_limit_selection():
 
     options = [ "Obegränsat", "2500 Kbps", "2000 Kbps", "1500 Kbps", "1000 Kbps", "500 Kbps" ]
     option_values = [ -1, 2500, 2000, 1500, 1000, 500 ]
-    limit = get_bitrate_limit()
+    limit = bitrate_limit()
     active_value_index = 0
     try: active_value_index = option_values.index(limit)
     except: BPLog("Value %d not found in list of bitrate limit options" %limit, Level.WARNING)
@@ -60,13 +60,13 @@ def activate_bitrate_limit_selection():
     set_bitrate_limit(chosen_limit)
     BPLog("Bitrate limit set to %d kbps (%s)" %(chosen_limit, options[decision]))
 
-def get_use_pirateplay():
+def use_pirateplay():
     return conf().GetValue(USE_PIRATEPLAY_KEY) == "True"
 
 def set_use_pirateplay(use_pirateplay):
     conf().SetValue(USE_PIRATEPLAY_KEY, str(use_pirateplay))
 
-def get_bitrate_limit():
+def bitrate_limit():
     limit = conf().GetValue(BITRATE_LIMIT_KEY)
     if limit == "": return -1
     else: return int(limit)
@@ -76,7 +76,7 @@ def set_bitrate_limit(limit):
 
 def get_option_stream_source():
     opt = "Uppspelningskälla: "
-    if get_use_pirateplay():
+    if use_pirateplay():
         opt += "Pirateplay"
     else:
         opt += "Web"
@@ -84,7 +84,7 @@ def get_option_stream_source():
 
 def get_option_bitrate_limit():
     opt = "Bandbreddsbegränsning: "
-    limit = get_bitrate_limit()
+    limit = bitrate_limit()
     if limit == -1:
         opt += "Obegränsat"
     else:

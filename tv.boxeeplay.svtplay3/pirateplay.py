@@ -22,6 +22,10 @@ def filter_path_matching(streams, matcher):
     for stream in streams:
         if matcher in stream["url"]: yield stream
 
+def filter_max_bitrate(streams, limit=-1):
+    for stream in streams:
+        if limit <= 0 or bandwidth_from_stream(stream) <= limit: yield stream
+
 def bandwidth_from_stream(stream):
     return int(stream["meta"]["quality"].split(' ', 1)[0])
 
@@ -32,7 +36,7 @@ def boxeespecific_quality_from_stream(stream):
     if bandwidth_from_stream(stream) < 1000: return '0'
     else: return '1'
 
-def pirateplayable_item(item):
+def pirateplayable_item(item, bitrate_limit):
     streams = get_streams(item.GetPath())
 
     print str(streams)
@@ -40,6 +44,7 @@ def pirateplayable_item(item):
         raise NoStreamsError()
 
     streams_generator = filter_path_matching(streams, "m3u8")
+    streams_generator = filter_max_bitrate(streams, bitrate_limit)
 
     streams = []
     streams.extend(streams_generator)

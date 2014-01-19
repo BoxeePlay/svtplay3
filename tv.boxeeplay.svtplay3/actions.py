@@ -337,31 +337,32 @@ def play_item(item):
 
     play_item = episode_list_item_to_playable(item)
     pirateplayable = False
-    try:
-        play_item = pirateplayable_item(play_item)
-        pirateplayable = True
-    except NoStreamsError:
-        track("Warning",
-                { "title": item.GetLabel(),
-                  "url": item.GetPath(),
-                  "Id": mc.GetUniqueId(),
-                  "type": item_type,
-                  "show": item.GetProperty("show"),
-                  "category": item.GetProperty("category"),
-                  "error_type": "No Streams"
-                })
-        BPLog("Inga strömmar genom pirateplay. Spelar upp via websidan.", Level.ERROR)
-    except NoSuitableStreamError:
-        track("Warning",
-                { "title": item.GetLabel(),
-                  "url": item.GetPath(),
-                  "Id": mc.GetUniqueId(),
-                  "type": item_type,
-                  "show": item.GetProperty("show"),
-                  "category": item.GetProperty("category"),
-                  "error_type": "No Suitable Streams"
-                })
-        BPLog("Inga strömmar i rätt format genom pirateplay. Spelar upp via websidan.", Level.ERROR)
+    if settings.use_pirateplay():
+        try:
+            play_item = pirateplayable_item(play_item, settings.bitrate_limit())
+            pirateplayable = True
+        except NoStreamsError:
+            track("Warning",
+                    { "title": item.GetLabel(),
+                    "url": item.GetPath(),
+                    "Id": mc.GetUniqueId(),
+                    "type": item_type,
+                    "show": item.GetProperty("show"),
+                    "category": item.GetProperty("category"),
+                    "error_type": "No Streams"
+                    })
+            BPLog("Inga strömmar genom pirateplay. Spelar upp via websidan.", Level.ERROR)
+        except NoSuitableStreamError:
+            track("Warning",
+                    { "title": item.GetLabel(),
+                    "url": item.GetPath(),
+                    "Id": mc.GetUniqueId(),
+                    "type": item_type,
+                    "show": item.GetProperty("show"),
+                    "category": item.GetProperty("category"),
+                    "error_type": "No Suitable Streams"
+                    })
+            BPLog("Inga strömmar i rätt format genom pirateplay. Spelar upp via websidan.", Level.ERROR)
 
     if not pirateplayable:
         play_item.SetPath("flash://boxeeplay.tv/src=%s&bx-jsactions=%s" %
