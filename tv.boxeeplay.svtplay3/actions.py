@@ -63,7 +63,7 @@ def initiate():
         latest_thread = AsyncTask(target=iterate, kwargs={"iterable":client.get_latest_full_episodes(), "limit":100})
         latest_thread.start()
 
-        ip_getter.join(1.0)
+        ip_getter.join(3.0)
         try:
             country_code = ip_getter.get_country_code()
             is_sweden = country_code == "SE"
