@@ -326,6 +326,8 @@ def play_item(item):
     global episode_list_index
     BPTraceEnter()
 
+    mc.ShowDialogWait()
+
     # Remember the selections in the lists
     store_category_list()
     store_show_list()
