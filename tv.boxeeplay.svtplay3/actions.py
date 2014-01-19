@@ -366,7 +366,7 @@ def play_item(item):
     if not pirateplayable:
         play_item.SetPath("flash://boxeeplay.tv/src=%s&bx-jsactions=%s" %
                 (quote_plus(play_item.GetPath()),quote_plus(BX_JSACTIONS_URL)))
-    BPLog("Playing clip \"%s\" with path \"%s\" and bitrate %s." %(item.GetLabel(), item.GetPath(), item.GetProperty("bitrate")))
+    BPLog("Playing clip \"%s\" with path \"%s\" and bitrate %s." %(play_item.GetLabel(), play_item.GetPath(), play_item.GetProperty("bitrate")))
     mc.GetPlayer().Play(play_item)
 
     track("Play", { "title": item.GetLabel(),
