@@ -33,7 +33,7 @@
 
         <control type="group" id="100">
             <posx>20</posx>
-            <posy>110</posy>
+            <posy>80</posy>
             <control type="button" id="106">
                 <ondown>107</ondown>
                 <onright lang="python">
@@ -83,6 +83,7 @@
                 <height>430</height>
                 <orientation>vertical</orientation>
                 <onup>107</onup>
+                <ondown>108</ondown>
                 <onright lang="python">
                     <![CDATA[actions.move_right_from_menu()]]>
                 </onright>
@@ -143,6 +144,27 @@
                         </control>
                     </control>
                 </focusedlayout>
+            </control>
+            <control type="button" id="108">
+                <onup>1000</onup>
+                <onright lang="python">
+                    <![CDATA[actions.move_right_from_menu()]]>
+                </onright>
+                <posy>540</posy>
+                <width>110</width>
+                <height>30</height>
+                <label>Inställningar</label>
+                <font>font18</font>
+                <textcolor>ffbcbdc0</textcolor>
+                <focusedcolor>white</focusedcolor>
+                <selectedcolor>white</selectedcolor>
+                <aligny>center</aligny>
+                <textoffsetx>5</textoffsetx>
+                <texturenofocus border="10">button_bg.png</texturenofocus>
+                <texturefocus border="10">button.png</texturefocus>
+                <alttexturefocus border="10">button.png</alttexturefocus>
+                <alttexturenofocus border="10">button_alt.png</alttexturenofocus>
+                <onclick lang="python"><![CDATA[actions.open_settings_window()]]></onclick>
             </control>
         </control>
 

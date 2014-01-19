@@ -2,7 +2,7 @@
 #author:Andreas Pehrson
 #project:boxeeplay.tv
 
-import mc, ip_info
+import mc, ip_info, settings
 from wlps import WlpsClient
 from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item, set_outside_sweden, episode_list_item_to_playable, has_episodes
 from pirateplay import pirateplayable_item, NoStreamsError, NoSuitableStreamError
@@ -452,3 +452,6 @@ def iterate(iterable, limit=None):
     if limit is None:
         return list(iterable)
     return list(islice(iterable, 0, limit))
+
+def open_settings_window():
+    settings.activate()
