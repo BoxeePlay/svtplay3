@@ -5,6 +5,7 @@
 import mc, ip_info
 from wlps import WlpsClient
 from wlps_mc import category_to_list_item, show_to_list_item, episode_to_list_item, set_outside_sweden, episode_list_item_to_playable, has_episodes
+from pirateplay import pirateplayable_item, NoStreamsError, NoSuitableStreamError
 from logger import BPLog,BPTraceEnter,BPTraceExit,Level
 from itertools import islice, ifilter
 from urllib import quote_plus
@@ -322,16 +323,45 @@ def play_item(item):
     store_show_list()
     store_episode_list()
 
-    play_item = episode_list_item_to_playable(item)
-    play_item.SetPath("flash://boxeeplay.tv/src=%s&bx-jsactions=%s" %
-                      (quote_plus(play_item.GetPath()),quote_plus(BX_JSACTIONS_URL)))
-    BPLog("Playing clip \"%s\" with path \"%s\" and bitrate %s." %(item.GetLabel(), item.GetPath(), item.GetProperty("bitrate")))
-    mc.GetPlayer().Play(play_item)
-
     if (item.GetProperty("episode")):
         item_type="Episode"
     else:
         item_type="Clip"
+
+    play_item = episode_list_item_to_playable(item)
+    pirateplayable = False
+    try:
+        play_item = pirateplayable_item(play_item)
+        pirateplayable = True
+    except NoStreamsError:
+        track("Warning",
+                { "title": item.GetLabel(),
+                  "url": item.GetPath(),
+                  "Id": mc.GetUniqueId(),
+                  "type": item_type,
+                  "show": item.GetProperty("show"),
+                  "category": item.GetProperty("category"),
+                  "error_type": "No Streams"
+                })
+        BPLog("Inga strömmar genom pirateplay. Spelar upp via websidan.", Level.ERROR)
+    except NoSuitableStreamError:
+        track("Warning",
+                { "title": item.GetLabel(),
+                  "url": item.GetPath(),
+                  "Id": mc.GetUniqueId(),
+                  "type": item_type,
+                  "show": item.GetProperty("show"),
+                  "category": item.GetProperty("category"),
+                  "error_type": "No Suitable Streams"
+                })
+        BPLog("Inga strömmar i rätt format genom pirateplay. Spelar upp via websidan.", Level.ERROR)
+
+    if not pirateplayable:
+        play_item.SetPath("flash://boxeeplay.tv/src=%s&bx-jsactions=%s" %
+                (quote_plus(play_item.GetPath()),quote_plus(BX_JSACTIONS_URL)))
+    BPLog("Playing clip \"%s\" with path \"%s\" and bitrate %s." %(item.GetLabel(), item.GetPath(), item.GetProperty("bitrate")))
+    mc.GetPlayer().Play(play_item)
+
     track("Play", { "title": item.GetLabel(),
                     "url": item.GetPath(),
                     "Id": mc.GetUniqueId(),

@@ -31,6 +31,12 @@ class Url:
     def __repr__(self):
         return self.get_url()
 
+    def get_data(self):
+        return get_data(self.get_url())
+
+    def load_json(self):
+        return load_json(self.get_url())
+
 def get_data(url, headers = False):
     BPTraceEnter(str(url))
     BPLog("Getting data from: " + str(url))
