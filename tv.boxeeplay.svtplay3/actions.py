@@ -366,6 +366,17 @@ def play_item(item):
                     "error_type": "No Suitable Streams"
                     })
             BPLog("Inga strömmar i rätt format genom pirateplay. Spelar upp via websidan.", Level.ERROR)
+        except Exception:
+            track("Warning",
+                 { "title": item.GetLabel(),
+                   "url": item.GetPath(),
+                   "Id": mc.GetUniqueId(),
+                   "type": item_type,
+                   "show": item.GetProperty("show"),
+                   "category": item.GetProperty("category"),
+                   "error_type": "Pirateplay Connection"
+                 })
+            BPLog("Fick inte kontakt med Pirateplay. Spelar upp via websidan.", Level.ERROR)
 
     if not pirateplayable:
         play_item.SetPath("flash://boxeeplay.tv/src=%s&bx-jsactions=%s" %
