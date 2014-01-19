@@ -41,7 +41,7 @@
                 </onright>
                 <width>190</width>
                 <height>40</height>
-                <label>Rekommenderat</label>
+                <label>Senaste Program</label>
                 <font>font22</font>
                 <textcolor>ffbcbdc0</textcolor>
                 <focusedcolor>white</focusedcolor>
@@ -52,7 +52,7 @@
                 <texturefocus border="10">button.png</texturefocus>
                 <alttexturefocus border="10">button.png</alttexturefocus>
                 <alttexturenofocus border="10">button_alt.png</alttexturenofocus>
-                <onclick lang="python"><![CDATA[actions.load_recommended_episodes()]]></onclick>
+                <onclick lang="python"><![CDATA[actions.load_latest_full_episodes()]]></onclick>
             </control>
             <control type="button" id="107">
                 <onup>106</onup>

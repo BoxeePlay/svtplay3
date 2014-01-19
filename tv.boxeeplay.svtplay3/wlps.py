@@ -53,6 +53,13 @@ class WlpsClient:
         url.add_param("limit", "100")
         return self.get_iterable(url)
 
+    def get_latest_full_episodes(self):
+        url = self.get_list_endpoint("episode")
+        url.add_param("order_by", "-date_broadcasted")
+        url.add_param("limit", "100")
+        url.add_param("kind_of", "1") # Episodes only, No clips
+        return self.get_iterable(url)
+
     def get_episodes(self, show):
         return self.get_episodes_from_id(show["id"])
 

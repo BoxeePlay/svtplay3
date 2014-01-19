@@ -60,8 +60,8 @@ def initiate():
             BPLog("Could not set up API client: " + str(e))
             show_error_and_exit(message="Kunde inte kontakta API-servern. Appen stängs ner...")
 
-        recommended_thread = AsyncTask(target=iterate, kwargs={"iterable":client.get_recommended_episodes(), "limit":20})
-        recommended_thread.start()
+        latest_thread = AsyncTask(target=iterate, kwargs={"iterable":client.get_latest_full_episodes(), "limit":100})
+        latest_thread.start()
 
         ip_getter.join(1.0)
         try:
@@ -81,11 +81,11 @@ def initiate():
         BPLog("No programs in program listing. Loading defaults.", Level.DEBUG)
         loadCategories()
 
-        recommended_thread.join()
+        latest_thread.join()
         recommended_item = mc.ListItem()
-        recommended_item.SetLabel("Rekommenderade program")
+        recommended_item.SetLabel("Senaste program")
         recommended_item.SetProperty("category", "preset-category")
-        load_episodes(recommended_thread.get_result(), recommended_item)
+        load_episodes(latest_thread.get_result(), recommended_item)
 
         initiated = True
 
@@ -172,6 +172,13 @@ def load_recommended_episodes():
     recommended_item.SetProperty("category", "preset-category")
     set_shows([], mc.ListItem())
     load_episodes(iterate(client.get_recommended_episodes(), 40), recommended_item)
+
+def load_latest_full_episodes():
+    latest_item = mc.ListItem()
+    latest_item.SetLabel("Senaste program")
+    latest_item.SetProperty("category", "preset-category")
+    set_shows([], mc.ListItem())
+    load_episodes(iterate(client.get_latest_full_episodes(), 40), latest_item)
 
 def load_live():
     live_item = mc.ListItem()
