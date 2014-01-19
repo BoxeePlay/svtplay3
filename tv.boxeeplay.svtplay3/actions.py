@@ -454,7 +454,7 @@ def show_error_and_exit(title = "Tyv채rr", message = "Ett ov채ntat fel har intr�
     show_error_and_continue(title, message)
     mc.CloseWindow()
 
-def show_error_and_continue(title = "Tyv채rr", message = "Ett ov채ntat fel har intr채ffat. Appen st채ngs..."):
+def show_error_and_continue(title = "Tyv채rr", message = "Ett ov채ntat fel har intr채ffat."):
     mc.ShowDialogOk(title, message)
 
 def track(name, data):
