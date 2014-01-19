@@ -1,10 +1,10 @@
 ﻿<app>
    <id>tv.boxeeplay.svtplay3</id>
-   <name>SVT Play v3.0</name>
-   <version>3.07</version>
-   <description>SVT Play är nu åter i din Boxee. Appen är skapad av boxeeplay.tv. Innehållet kommer från welovepublicservice.se.
+   <name>SVT Play</name>
+   <version>3.08</version>
+   <description>SVT Play är nu åter i din Boxee. Appen är skapad av boxeeplay.tv. Innehållet kommer från welovepublicservice.se. Direktströmmar kommer från pirateplay.se.
 
-Version 3.07</description>
+Version 3.08</description>
    <thumb>http://www.boxeeplay.tv/images/svtplay.png</thumb>
    <repositoryid>tv.boxeeplay</repositoryid>
    <repository>http://www.boxeeplay.tv/apps</repository>
