@@ -13,7 +13,7 @@ from trackerjob import TrackerJob
 from jobmanager import BoxeeJobManager
 from async_task import AsyncTask
 
-VERSION = "SVTPlay 3.0.0"
+VERSION = "SVTPlay 3.10"
 NO_SHOWS_TEXT = "Inga program laddade"
 NO_EPISODES_TEXT = "Inga avsnitt för det här programmet"
 BX_JSACTIONS_URL = "http://boxeeplay.tv/bx-jsactions/svtplay3.js"
