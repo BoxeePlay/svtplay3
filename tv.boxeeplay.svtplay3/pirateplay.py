@@ -26,6 +26,10 @@ def filter_max_bitrate(streams, limit=-1):
     for stream in streams:
         if limit <= 0 or bandwidth_from_stream(stream) <= limit: yield stream
 
+def filter_only_fixed_bitrate(streams):
+    for stream in streams:
+        if bandwidth_from_stream(stream) > 0: yield stream
+
 def bandwidth_from_stream(stream):
     try: return int(stream["meta"]["quality"].split(' ', 1)[0])
     except: return -1
@@ -46,7 +50,8 @@ def pirateplayable_item(item, bitrate_limit):
         raise NoStreamsError()
 
     streams_generator = filter_path_matching(streams, "m3u8")
-    streams_generator = filter_max_bitrate(streams, bitrate_limit)
+    streams_generator = filter_max_bitrate(streams_generator, bitrate_limit)
+    streams_generator = filter_only_fixed_bitrate(streams_generator)
 
     streams = []
     streams.extend(streams_generator)
